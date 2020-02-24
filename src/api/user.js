@@ -1,4 +1,4 @@
-import axios from '@/libs/api.request'
+import axios from '@/libs/request'
 
 export const login = ({ userName, password }) => {
   const data = {
@@ -43,7 +43,7 @@ export const getMessage = () => {
   })
 }
 
-export const getContentByMsgId = msg_id => {
+export const getContentByMsgId = (msg_id) => {
   return axios.request({
     url: 'message/content',
     method: 'get',
@@ -53,7 +53,7 @@ export const getContentByMsgId = msg_id => {
   })
 }
 
-export const hasRead = msg_id => {
+export const hasRead = (msg_id) => {
   return axios.request({
     url: 'message/has_read',
     method: 'post',
@@ -63,7 +63,7 @@ export const hasRead = msg_id => {
   })
 }
 
-export const removeReaded = msg_id => {
+export const removeReaded = (msg_id) => {
   return axios.request({
     url: 'message/remove_readed',
     method: 'post',
@@ -73,7 +73,7 @@ export const removeReaded = msg_id => {
   })
 }
 
-export const restoreTrash = msg_id => {
+export const restoreTrash = (msg_id) => {
   return axios.request({
     url: 'message/restore',
     method: 'post',

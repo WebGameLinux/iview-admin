@@ -1,4 +1,4 @@
-import axios from '@/libs/api.request'
+import axios from '@/libs/request'
 
 export const getTableData = () => {
   return axios.request({
@@ -21,7 +21,7 @@ export const errorReq = () => {
   })
 }
 
-export const saveErrorLogger = info => {
+export const saveErrorLogger = (info) => {
   return axios.request({
     url: 'save_error_logger',
     data: info,
@@ -29,7 +29,7 @@ export const saveErrorLogger = info => {
   })
 }
 
-export const uploadImg = formData => {
+export const uploadImg = (formData) => {
   return axios.request({
     url: 'image/upload',
     data: formData

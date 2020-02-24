@@ -1,12 +1,7 @@
 <template>
-  <Form
-    ref="loginForm"
-    :model="form"
-    :rules="rules"
-    @keydown.enter.native="handleSubmit"
-  >
-    <FormItem prop="userName">
-      <Input v-model="form.userName" placeholder="请输入用户名">
+  <Form ref="loginForm" :model="form" :rules="rules" @keydown.enter.native="handleSubmit">
+    <FormItem prop="username">
+      <Input v-model="form.username" placeholder="请输入用户名">
         <span slot="prepend">
           <Icon :size="16" type="ios-person"></Icon>
         </span>
@@ -20,21 +15,11 @@
       </Input>
     </FormItem>
     <FormItem prop="code">
-      <Input
-        class="imooc-input"
-        type="password"
-        v-model="form.code"
-        placeholder="请输入验证码"
-      >
+      <Input class="imooc-input" type="text" v-model="form.code" placeholder="请输入验证码">
         <span slot="prepend">
           <Icon :size="14" type="md-image"></Icon>
         </span>
-        <span
-          class="imooc-code"
-          slot="append"
-          v-html="svg"
-          @click="_getCode()"
-        ></span>
+        <span class="imooc-code" slot="append" v-html="svg" @click="_getCode()"></span>
       </Input>
     </FormItem>
     <FormItem>
@@ -43,7 +28,9 @@
   </Form>
 </template>
 <script>
-import axios from 'axios'
+// import axios from '@/libs/request'
+import { getCode } from '@/api/login'
+import uuid from 'uuid/v4'
 export default {
   name: 'LoginForm',
   props: {
@@ -64,44 +51,47 @@ export default {
     return {
       svg: '',
       form: {
-        userName: '',
+        username: '',
         password: '',
-        code: ''
+        code: '',
+        sid: ''
       }
     }
   },
   computed: {
     rules () {
       return {
-        userName: this.userNameRules,
+        username: this.userNameRules,
         password: this.passwordRules
       }
     }
   },
   mounted () {
+    let sid = ''
+    if (localStorage.getItem('sid')) {
+      sid = localStorage.getItem('sid')
+    } else {
+      sid = uuid()
+      localStorage.setItem('sid', sid)
+    }
+    this.$store.commit('setSid', sid)
+    this.form.sid = sid
     this._getCode()
   },
   methods: {
     handleSubmit () {
       this.$refs.loginForm.validate((valid) => {
         if (valid) {
-          this.$emit('on-success-valid', {
-            userName: this.form.userName,
-            password: this.form.password
-          })
+          this.$emit('on-success-valid', { ...this.form })
         }
       })
     },
     _getCode () {
-      axios
-        .get('http://localhost:3000/public/getCaptcha?sid=toimc')
-        .then((res) => {
-          const obj = res.data
-          console.log('TCL: _getCode -> res', res)
-          if (res.status === 200) {
-            this.svg = obj.data
-          }
-        })
+      getCode(this.$store.state.sid).then((res) => {
+        if (res.code === 200) {
+          this.svg = res.data
+        }
+      })
     }
   }
 }

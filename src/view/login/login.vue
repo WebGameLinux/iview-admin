@@ -1,5 +1,5 @@
 <style lang="less">
-  @import './login.less';
+@import './login.less';
 </style>
 
 <template>
@@ -23,17 +23,19 @@ export default {
     LoginForm
   },
   methods: {
-    ...mapActions([
-      'handleLogin',
-      'getUserInfo'
-    ]),
-    handleSubmit ({ userName, password }) {
-      this.handleLogin({ userName, password }).then(res => {
-        this.getUserInfo().then(res => {
+    ...mapActions(['handleLogin', 'getUserInfo']),
+    handleSubmit (options) {
+      this.handleLogin(options).then((res) => {
+        if (res) {
           this.$router.push({
             name: this.$config.homeName
           })
-        })
+        }
+        // this.getUserInfo().then((res) => {
+        //   this.$router.push({
+        //     name: this.$config.homeName
+        //   })
+        // })
       })
     }
   }
@@ -41,5 +43,4 @@ export default {
 </script>
 
 <style>
-
 </style>
