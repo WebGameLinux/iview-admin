@@ -37,13 +37,38 @@ export default {
     userNameRules: {
       type: Array,
       default: () => {
-        return [{ required: true, message: '账号不能为空', trigger: 'blur' }]
+        return [
+          { required: true, message: '账号不能为空', trigger: 'blur' },
+          { type: 'email', message: '邮箱格式不正确', trigger: 'change' }
+        ]
       }
     },
     passwordRules: {
       type: Array,
       default: () => {
-        return [{ required: true, message: '密码不能为空', trigger: 'blur' }]
+        return [
+          { required: true, message: '密码不能为空', trigger: 'blur' },
+          {
+            type: 'string',
+            min: 6,
+            message: '密码至少为6位',
+            trigger: 'change'
+          }
+        ]
+      }
+    },
+    codeRules: {
+      type: Array,
+      default: () => {
+        return [
+          { required: true, message: '验证码不能为空', trigger: 'blur' },
+          {
+            type: 'string',
+            len: 4,
+            message: '验证码长度不正确',
+            trigger: 'change'
+          }
+        ]
       }
     }
   },
@@ -62,7 +87,8 @@ export default {
     rules () {
       return {
         username: this.userNameRules,
-        password: this.passwordRules
+        password: this.passwordRules,
+        code: this.codeRules
       }
     }
   },
