@@ -83,7 +83,7 @@ export default {
           .then((res) => {
             // console.log('TCL: handleLogin -> res', res)
             const data = res.data
-            commit('setToken', data.token)
+            commit('setToken', res.token)
             commit('setAvatar', data.pic)
             commit('setUserName', data.name)
             commit('setUserId', data._id)
@@ -121,10 +121,10 @@ export default {
           getUserInfo(state.token)
             .then((res) => {
               const data = res.data
-              commit('setAvatar', data.avatar)
+              commit('setAvatar', data.pic)
               commit('setUserName', data.name)
-              commit('setUserId', data.user_id)
-              commit('setAccess', data.access)
+              commit('setUserId', data._id)
+              commit('setAccess', data.roles)
               commit('setHasGetInfo', true)
               resolve(data)
             })
