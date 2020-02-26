@@ -16,7 +16,7 @@
     "codemirror": "^5.52.0",
     "countup": "^1.8.2",
     "cropperjs": "^1.5.6",
-    "dayjs": "^1.8.20",
+    "dayjs": "^1.8.21",
     "echarts": "^4.6.0",
     "html2canvas": "^1.0.0-alpha.12",
     "iview-area": "^1.6.0",

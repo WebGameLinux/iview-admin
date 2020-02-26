@@ -2,7 +2,12 @@ import Cookies from 'js-cookie'
 // cookie保存的天数
 import config from '@/config'
 import { forEach, hasOneOf, objEqual } from '@/libs/tools'
+import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
+import 'dayjs/locale/zh-cn'
 const { title, cookieExpires, useI18n } = config
+
+dayjs.extend(relativeTime)
 
 export const TOKEN_KEY = 'token'
 
@@ -421,4 +426,14 @@ export const setTitle = (routeItem, vm) => {
   const pageTitle = showTitle(handledRoute, vm)
   const resTitle = pageTitle ? `${title} - ${pageTitle}` : title
   window.document.title = resTitle
+}
+
+export const moment = (date) => {
+  // 超过7天，显示日期
+  if (dayjs(date).isBefore(dayjs().subtract(7, 'days'))) {
+    return dayjs(date).format('YYYY-MM-DD')
+  } else {
+    // 1小前，xx小时前，X天前
+    return dayjs(date).locale('zh-cn').from(dayjs())
+  }
 }
