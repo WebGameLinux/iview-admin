@@ -44,7 +44,7 @@ export default {
   org_tree_page: 'Org Tree',
   drag_drawer_page: 'Draggable Drawer',
   tree_select_page: 'Tree Selector',
-  article_manager: 'Article Management',
+  article_management: 'Article Management',
   content_management: 'Content Management',
   tags_management: 'Tags Management'
 }

@@ -10,7 +10,20 @@
         :columns="columns"
         @on-delete="handleDelete"
       />
-      <Button style="margin: 10px 0;" type="primary" @click="exportExcel">导出为Excel文件</Button>
+      <Row type="flex" justify="space-between" align="middle">
+        <Button style="margin: 10px 0;" type="primary" @click="exportExcel">导出为Excel文件</Button>
+        <Page
+          :total="total"
+          :current="page"
+          :page-size="limit"
+          :page-size-opts="pageArr"
+          show-elevator
+          show-sizer
+          show-total
+          @on-change="onPageChange"
+          @on-page-size-change="onPageSizeChange"
+        />
+      </Row>
     </Card>
   </div>
 </template>
@@ -26,6 +39,9 @@ export default {
   },
   data () {
     return {
+      page: 1,
+      limit: 10,
+      total: 0,
       columns: [
         {
           title: '标题',
@@ -168,6 +184,7 @@ export default {
           align: 'center'
         }
       ],
+      pageArr: [10, 20, 30, 50, 100],
       tableData: []
     }
   },
@@ -179,21 +196,33 @@ export default {
       this.$refs.tables.exportCsv({
         filename: `table-${new Date().valueOf()}.csv`
       })
+    },
+    onPageChange (page) {
+      this.page = page
+      this._getList()
+    },
+    onPageSizeChange (size) {
+      this.limit = size
+      this._getList()
+    },
+    _getList () {
+      getList({ page: this.page - 1, limit: this.limit }).then((res) => {
+        // 方法一： -> 修改getList接口
+        // const data = res.data
+        // data.forEach((item) => {
+        //   if (item.status === 0) {
+        //     item.status = '打开回复'
+        //   } else {
+        //     item.status = '禁止回复'
+        //   }
+        // })
+        this.tableData = res.data
+        this.total = res.total
+      })
     }
   },
   mounted () {
-    getList({ page: 0, limit: 10 }).then((res) => {
-      // 方法一： -> 修改getList接口
-      // const data = res.data
-      // data.forEach((item) => {
-      //   if (item.status === 0) {
-      //     item.status = '打开回复'
-      //   } else {
-      //     item.status = '禁止回复'
-      //   }
-      // })
-      this.tableData = res.data
-    })
+    this._getList()
   }
 }
 </script>
