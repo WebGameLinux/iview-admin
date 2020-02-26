@@ -32,14 +32,17 @@ const showThisMenuEle = (item, access) => {
  */
 export const getMenuByRouter = (list, access) => {
   const res = []
-  forEach(list, item => {
+  forEach(list, (item) => {
     if (!item.meta || (item.meta && !item.meta.hideInMenu)) {
       const obj = {
         icon: (item.meta && item.meta.icon) || '',
         name: item.name,
         meta: item.meta
       }
-      if ((hasChild(item) || (item.meta && item.meta.showAlways)) && showThisMenuEle(item, access)) {
+      if (
+        (hasChild(item) || (item.meta && item.meta.showAlways)) &&
+        showThisMenuEle(item, access)
+      ) {
         obj.children = getMenuByRouter(item.children, access)
       }
       if (item.meta && item.meta.href) obj.href = item.meta.href
@@ -56,23 +59,27 @@ export const getMenuByRouter = (list, access) => {
 export const getBreadCrumbList = (route, homeRoute) => {
   const homeItem = { ...homeRoute, icon: homeRoute.meta.icon }
   const routeMetched = route.matched
-  if (routeMetched.some(item => item.name === homeRoute.name)) return [homeItem]
-  let res = routeMetched.filter(item => {
-    return item.meta === undefined || !item.meta.hideInBread
-  }).map(item => {
-    const meta = { ...item.meta }
-    if (meta.title && typeof meta.title === 'function') {
-      meta.__titleIsFunction__ = true
-      meta.title = meta.title(route)
-    }
-    const obj = {
-      icon: (item.meta && item.meta.icon) || '',
-      name: item.name,
-      meta: meta
-    }
-    return obj
-  })
-  res = res.filter(item => {
+  if (routeMetched.some((item) => item.name === homeRoute.name)) {
+    return [homeItem]
+  }
+  let res = routeMetched
+    .filter((item) => {
+      return item.meta === undefined || !item.meta.hideInBread
+    })
+    .map((item) => {
+      const meta = { ...item.meta }
+      if (meta.title && typeof meta.title === 'function') {
+        meta.__titleIsFunction__ = true
+        meta.title = meta.title(route)
+      }
+      const obj = {
+        icon: (item.meta && item.meta.icon) || '',
+        name: item.name,
+        meta: meta
+      }
+      return obj
+    })
+  res = res.filter((item) => {
     return !item.meta.hideInMenu
   })
   return [{ ...homeItem, to: homeRoute.path }, ...res]
@@ -97,17 +104,25 @@ export const showTitle = (item, vm) => {
   let { title, __titleIsFunction__ } = item.meta
   if (!title) return
   if (useI18n) {
-    if (title.includes('{{') && title.includes('}}') && useI18n) title = title.replace(/({{[\s\S]+?}})/, (m, str) => str.replace(/{{([\s\S]*)}}/, (m, _) => vm.$t(_.trim())))
-    else if (__titleIsFunction__) title = item.meta.title
-    else title = vm.$t(item.name)
-  } else title = (item.meta && item.meta.title) || item.name
+    if (title.includes('{{') && title.includes('}}') && useI18n) {
+      title = title.replace(/({{[\s\S]+?}})/, (m, str) =>
+        str.replace(/{{([\s\S]*)}}/, (m, _) => vm.$t(_.trim()))
+      )
+    } else if (__titleIsFunction__) {
+      title = item.meta.title
+    } else {
+      title = vm.$t(item.name)
+    }
+  } else {
+    title = (item.meta && item.meta.title) || item.name
+  }
   return title
 }
 
 /**
  * @description 本地存储和获取标签导航列表
  */
-export const setTagNavListInLocalstorage = list => {
+export const setTagNavListInLocalstorage = (list) => {
   localStorage.tagNaveList = JSON.stringify(list)
 }
 /**
@@ -146,7 +161,7 @@ export const getHomeRoute = (routers, homeName = 'home') => {
 export const getNewTagList = (list, newRoute) => {
   const { name, path, meta } = newRoute
   const newList = [...list]
-  if (newList.findIndex(item => item.name === name) >= 0) return newList
+  if (newList.findIndex((item) => item.name === name) >= 0) return newList
   else newList.push({ name, path, meta })
   return newList
 }
@@ -156,8 +171,9 @@ export const getNewTagList = (list, newRoute) => {
  * @param {*} route 路由列表
  */
 const hasAccess = (access, route) => {
-  if (route.meta && route.meta.access) return hasOneOf(access, route.meta.access)
-  else return true
+  if (route.meta && route.meta.access) {
+    return hasOneOf(access, route.meta.access)
+  } else return true
 }
 
 /**
@@ -169,7 +185,7 @@ const hasAccess = (access, route) => {
  */
 export const canTurnTo = (name, access, routes) => {
   const routePermissionJudge = (list) => {
-    return list.some(item => {
+    return list.some((item) => {
       if (item.children && item.children.length) {
         return routePermissionJudge(item.children)
       } else if (item.name === name) {
@@ -185,10 +201,10 @@ export const canTurnTo = (name, access, routes) => {
  * @param {String} url
  * @description 从URL中解析参数
  */
-export const getParams = url => {
+export const getParams = (url) => {
   const keyValueArr = url.split('?')[1].split('&')
   const paramObj = {}
-  keyValueArr.forEach(item => {
+  keyValueArr.forEach((item) => {
     const keyValue = item.split('=')
     paramObj[keyValue[0]] = keyValue[1]
   })
@@ -204,7 +220,7 @@ export const getNextRoute = (list, route) => {
   if (list.length === 2) {
     res = getHomeRoute(list)
   } else {
-    const index = list.findIndex(item => routeEqual(item, route))
+    const index = list.findIndex((item) => routeEqual(item, route))
     if (index === list.length - 1) res = list[list.length - 2]
     else res = list[index + 1]
   }
@@ -237,11 +253,14 @@ export const getArrayFromFile = (file) => {
     reader.onload = function (evt) {
       const data = evt.target.result // 读到的数据
       const pasteData = data.trim()
-      arr = pasteData.split((/[\n\u0085\u2028\u2029]|\r\n?/g)).map(row => {
-        return row.split('\t')
-      }).map(item => {
-        return item[0].split(',')
-      })
+      arr = pasteData
+        .split(/[\n\u0085\u2028\u2029]|\r\n?/g)
+        .map((row) => {
+          return row.split('\t')
+        })
+        .map((item) => {
+          return item[0].split(',')
+        })
       if (format === 'csv') resolve(arr)
       else reject(new Error('[Format Error]:你上传的不是Csv文件'))
     }
@@ -258,13 +277,13 @@ export const getTableDataFromArray = (array) => {
   let tableData = []
   if (array.length > 1) {
     const titles = array.shift()
-    columns = titles.map(item => {
+    columns = titles.map((item) => {
       return {
         title: item,
         key: item
       }
     })
-    tableData = array.map(item => {
+    tableData = array.map((item) => {
       const res = {}
       item.forEach((col, i) => {
         res[titles[i]] = col
@@ -292,7 +311,10 @@ export const findNodeUpperByClasses = (ele, classes) => {
   const parentNode = ele.parentNode
   if (parentNode) {
     const classList = parentNode.classList
-    if (classList && classes.every(className => classList.contains(className))) {
+    if (
+      classList &&
+      classes.every((className) => classList.contains(className))
+    ) {
       return parentNode
     } else {
       return findNodeUpperByClasses(parentNode, classes)
@@ -327,7 +349,11 @@ export const routeEqual = (route1, route2) => {
   const params2 = route2.params || {}
   const query1 = route1.query || {}
   const query2 = route2.query || {}
-  return (route1.name === route2.name) && objEqual(params1, params2) && objEqual(query1, query2)
+  return (
+    route1.name === route2.name &&
+    objEqual(params1, params2) &&
+    objEqual(query1, query2)
+  )
 }
 
 /**
@@ -353,17 +379,16 @@ export const localRead = (key) => {
 // scrollTop animation
 export const scrollTop = (el, from = 0, to, duration = 500, endCallback) => {
   if (!window.requestAnimationFrame) {
-    window.requestAnimationFrame = (
+    window.requestAnimationFrame =
       window.webkitRequestAnimationFrame ||
       window.mozRequestAnimationFrame ||
       window.msRequestAnimationFrame ||
       function (callback) {
         return window.setTimeout(callback, 1000 / 60)
       }
-    )
   }
   const difference = Math.abs(from - to)
-  const step = Math.ceil(difference / duration * 50)
+  const step = Math.ceil((difference / duration) * 50)
 
   const scroll = (start, end, step) => {
     if (start === end) {
@@ -371,9 +396,9 @@ export const scrollTop = (el, from = 0, to, duration = 500, endCallback) => {
       return
     }
 
-    let d = (start + step > end) ? end : start + step
+    let d = start + step > end ? end : start + step
     if (start > end) {
-      d = (start - step < end) ? end : start - step
+      d = start - step < end ? end : start - step
     }
 
     if (el === window) {
