@@ -1,8 +1,8 @@
 import axios from 'axios'
-import store from '@/store'
 // import { Spin } from 'iview'
 import publicConfig from '@/config'
 import errorHandle from './errorHandle'
+import { getToken } from './util'
 
 const CancelToken = axios.CancelToken
 class HttpRequest {
@@ -40,7 +40,7 @@ class HttpRequest {
         publicConfig.publicPath.map((path) => {
           isPublic = isPublic || path.test(config.url)
         })
-        const token = store.state.token
+        const token = getToken()
         if (!isPublic && token) {
           config.headers.Authorization = 'Bearer ' + token
         }

@@ -3,12 +3,12 @@
     <Card>
       <tables
         ref="tables"
-        editable
         searchable
         search-place="top"
         v-model="tableData"
         :columns="columns"
-        @on-delete="handleDelete"
+        @on-row-edit="handleRowEdit"
+        @on-row-remove="handleRowRemove"
       />
       <Row type="flex" justify="space-between" align="middle">
         <Button style="margin: 10px 0;" type="primary" @click="exportExcel">导出为Excel文件</Button>
@@ -25,28 +25,40 @@
         />
       </Row>
     </Card>
+    <EditModel
+      :isShow="showEdit"
+      :item="currentItem"
+      @editEvent="handleItemEdit"
+      @changeShow="handleModeStatus"
+    ></EditModel>
   </div>
 </template>
 
 <script>
 import Tables from '_c/tables'
-import { getList } from '@/api/content'
+import EditModel from './editModel'
+import { getList, deletePostById } from '@/api/content'
 import dayjs from 'dayjs'
 export default {
   name: 'content_management',
   components: {
-    Tables
+    Tables,
+    EditModel
   },
   data () {
     return {
       page: 1,
       limit: 10,
       total: 0,
+      showEdit: false,
+      currentItem: {},
       columns: [
         {
           title: '标题',
           key: 'title',
-          minWidth: 400
+          minWidth: 400,
+          ellipsis: true,
+          tooltip: true
         },
         {
           title: '创建时间',
@@ -116,7 +128,7 @@ export default {
           align: 'center',
           render: (h, params) => {
             return h('div', [
-              h('span', params.row.tags.map((o) => o.name).join(','))
+              h('span', params.row.tags.map((o) => o.name).join(',') || '')
             ])
           }
         },
@@ -179,6 +191,7 @@ export default {
         },
         {
           title: '设置',
+          slot: 'action',
           fixed: 'right',
           width: 160,
           align: 'center'
@@ -189,8 +202,40 @@ export default {
     }
   },
   methods: {
-    handleDelete (params) {
-      console.log(params)
+    handleModeStatus (value) {
+      this.showEdit = value
+    },
+    handleItemEdit (item) {},
+    handleRowEdit (row, index) {
+      console.log('TCL: handleRowEdit -> index', index)
+      console.log('TCL: handleRowEdit -> row', row)
+      this.showEdit = true
+      this.currentItem = row
+    },
+    handleRowRemove (row, index) {
+      console.log('TCL: handleRowRemove -> index', index)
+      console.log('TCL: handleRowRemove -> row', row)
+      this.$Modal.confirm({
+        title: '确定删除文章吗？',
+        content: `删除第${index + 1}条数据，文章标题："${row.title}"的文章吗`,
+        onOk: () => {
+          deletePostById(row._id)
+            .then((res) => {
+              if (res.code === 200) {
+                this.$Message.info('成功删除！')
+                this.tableData = this.tableData.filter(
+                  (item) => item._id !== row._id
+                )
+              }
+            })
+            .catch((err) => {
+              this.$Message.info('删除失败！原因：' + err)
+            })
+        },
+        onCancel: () => {
+          this.$Message.info('取消操作！')
+        }
+      })
     },
     exportExcel () {
       this.$refs.tables.exportCsv({
