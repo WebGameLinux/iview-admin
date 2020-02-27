@@ -29,7 +29,7 @@
       :isShow="showEdit"
       :item="currentItem"
       @editEvent="handleItemEdit"
-      @changeShow="handleModeStatus"
+      @changeEvent="handleChangeEvent"
     ></EditModel>
   </div>
 </template>
@@ -37,7 +37,7 @@
 <script>
 import Tables from '_c/tables'
 import EditModel from './editModel'
-import { getList, deletePostById } from '@/api/content'
+import { getList, deletePostById, updatePostById } from '@/api/content'
 import dayjs from 'dayjs'
 export default {
   name: 'content_management',
@@ -51,6 +51,7 @@ export default {
       limit: 10,
       total: 0,
       showEdit: false,
+      currentIndex: 0,
       currentItem: {},
       columns: [
         {
@@ -191,6 +192,7 @@ export default {
         },
         {
           title: '设置',
+          key: 'settings',
           slot: 'action',
           fixed: 'right',
           width: 160,
@@ -202,19 +204,25 @@ export default {
     }
   },
   methods: {
-    handleModeStatus (value) {
+    handleChangeEvent (value) {
       this.showEdit = value
     },
-    handleItemEdit (item) {},
+    handleItemEdit (item) {
+      updatePostById(item).then((res) => {
+        if (res.code === 200) {
+          console.log('更新成功')
+          // this.tableData[this.currentIndex] = item
+          this.tableData.splice(this.currentIndex, 1, item)
+        }
+      })
+      this.showEdit = false
+    },
     handleRowEdit (row, index) {
-      console.log('TCL: handleRowEdit -> index', index)
-      console.log('TCL: handleRowEdit -> row', row)
       this.showEdit = true
-      this.currentItem = row
+      this.currentIndex = index
+      this.currentItem = { ...row }
     },
     handleRowRemove (row, index) {
-      console.log('TCL: handleRowRemove -> index', index)
-      console.log('TCL: handleRowRemove -> row', row)
       this.$Modal.confirm({
         title: '确定删除文章吗？',
         content: `删除第${index + 1}条数据，文章标题："${row.title}"的文章吗`,

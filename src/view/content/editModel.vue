@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Modal v-model="showModel" title="编辑文章属性" @on-ok="ok" @on-cancel="cancel">
+    <Modal v-model="showStatus" title="编辑文章属性" @on-ok="ok" @on-cancel="cancel">
       <Form :model="localItem" :label-width="80">
         <FormItem label="标题">
           <Input v-model="localItem.title" placeholder="请输入文章标题"></Input>
@@ -34,7 +34,7 @@
           </RadioGroup>
         </FormItem>
         <FormItem label="帖子积分">
-          <Slider v-model="localItem.fav" show-input></Slider>
+          <Slider v-model="formatFav" show-input :step="10"></Slider>
         </FormItem>
       </Form>
     </Modal>
@@ -57,12 +57,22 @@ export default {
       this.localItem = newval
     },
     isShow () {
-      this.showModel = this.isShow
+      this.showStatus = this.isShow
+    }
+  },
+  computed: {
+    formatFav: {
+      get () {
+        return parseInt(this.localItem.fav)
+      },
+      set (value) {
+        this.localItem.fav = value
+      }
     }
   },
   data () {
     return {
-      showModel: false,
+      showStatus: false,
       localItem: {
         tid: '',
         uid: '',
@@ -87,7 +97,7 @@ export default {
       this.$Message.info('编辑成功！')
     },
     cancel () {
-      this.$emit('changeShow', false)
+      this.$emit('changeEvent', false)
       this.$Message.info('取消编辑！')
     }
   }

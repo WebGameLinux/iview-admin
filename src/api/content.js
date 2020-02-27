@@ -9,7 +9,12 @@ const deletePostById = (id) => {
   return axios.get('/content/delete?tid=' + id)
 }
 
+const updatePostById = (data) => {
+  return axios.post('/content/update-id', data)
+}
+
 export {
   getList,
-  deletePostById
+  deletePostById,
+  updatePostById
 }
