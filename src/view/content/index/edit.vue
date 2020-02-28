@@ -36,11 +36,21 @@
         <FormItem label="帖子积分">
           <Slider v-model="formatFav" show-input :step="10"></Slider>
         </FormItem>
+        <FormItem label="标签">
+          <Select v-model="formatTags" multiple>
+            <Option
+              v-for="(item,index) in tagsList"
+              :value="item.tagName"
+              :key="'editTags-' + index"
+            >{{ item.tagName }}</Option>
+          </Select>
+        </FormItem>
       </Form>
     </Modal>
   </div>
 </template>
 <script>
+import { getTags } from '@/api/content'
 export default {
   props: {
     isShow: {
@@ -68,11 +78,29 @@ export default {
       set (value) {
         this.localItem.fav = value
       }
+    },
+    formatTags: {
+      get () {
+        return this.localItem.tags.map((o) => o.name)
+      },
+      set (value) {
+        const arr = this.tagsList.filter(
+          (item) => value.indexOf(item.tagName) !== -1
+        )
+        this.localItem.tags = arr.map((o) => {
+          return {
+            class: o.tagClass,
+            name: o.tagName
+          }
+        })
+        // this.localItem.tags.push()
+      }
     }
   },
   data () {
     return {
       showStatus: false,
+      tagsList: [],
       localItem: {
         tid: '',
         uid: '',
@@ -91,7 +119,17 @@ export default {
       }
     }
   },
+  mounted () {
+    this._getTags()
+  },
   methods: {
+    _getTags () {
+      getTags().then((res) => {
+        if (res.code === 200) {
+          this.tagsList = res.data
+        }
+      })
+    },
     ok () {
       this.$emit('editEvent', this.localItem)
       this.$Message.info('编辑成功！')

@@ -36,7 +36,7 @@
 
 <script>
 import Tables from '_c/tables'
-import EditModel from './editModel'
+import EditModel from './index/edit'
 import { getList, deletePostById, updatePostById } from '@/api/content'
 import dayjs from 'dayjs'
 export default {
