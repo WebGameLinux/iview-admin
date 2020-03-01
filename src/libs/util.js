@@ -434,6 +434,8 @@ export const moment = (date) => {
     return dayjs(date).format('YYYY-MM-DD')
   } else {
     // 1小前，xx小时前，X天前
-    return dayjs(date).locale('zh-cn').from(dayjs())
+    return dayjs(date)
+      .locale('zh-cn')
+      .from(dayjs())
   }
 }
