@@ -36,5 +36,25 @@ export default [
         component: () => import('@/view/content/tags.vue')
       }
     ]
+  },
+  {
+    path: '/user',
+    name: 'user',
+    meta: {
+      icon: 'md-albums',
+      title: '用户管理'
+    },
+    component: Main,
+    children: [
+      {
+        path: 'index',
+        name: 'user_management',
+        meta: {
+          icon: 'ios-people',
+          title: '用户管理'
+        },
+        component: () => import('@/view/user/index.vue')
+      }
+    ]
   }
 ]

@@ -11,7 +11,7 @@
         @on-row-remove="handleRowRemove"
       />
       <Row type="flex" justify="space-between" align="middle">
-        <Button style="margin: 10px 0;" type="primary" @click="exportExcel">导出为Excel文件</Button>
+        <Button style="margin: 10px 0;" type="primary" @click="exportExcel">导出为Csv文件</Button>
         <Page
           :total="total"
           :current="page"
