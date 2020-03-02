@@ -1,8 +1,8 @@
 <template>
   <div>
-    <Modal v-model="showStatus" title="编辑文章属性" @on-ok="ok" @on-cancel="cancel">
-      <Form :model="localItem" :label-width="80">
-        <FormItem label="标题">
+    <Modal v-model="showStatus" title="编辑文章属性" @on-ok="ok" @on-cancel="cancel" :loading="loading">
+      <Form :model="localItem" :rules="rules" :label-width="80" ref="table">
+        <FormItem label="标题" prop="title">
           <Input v-model="localItem.title" placeholder="请输入文章标题"></Input>
         </FormItem>
         <FormItem label="分类">
@@ -99,6 +99,7 @@ export default {
   },
   data () {
     return {
+      loading: true,
       showStatus: false,
       tagsList: [],
       localItem: {
@@ -116,6 +117,9 @@ export default {
         isTop: '0',
         sort: 'created',
         tags: []
+      },
+      rules: {
+        title: [{ required: true, message: '标题不得为空！', trigger: 'blur' }]
       }
     }
   },
@@ -131,8 +135,20 @@ export default {
       })
     },
     ok () {
-      this.$emit('editEvent', this.localItem)
-      this.$Message.info('编辑成功！')
+      // this.$emit('editEvent', this.localItem)
+      // this.$Message.info('编辑成功！')
+      this.$refs.table.validate((valid) => {
+        if (valid) {
+          this.loading = false
+          this.$emit('changeEvent', false)
+          this.$emit('editEvent', this.localItem)
+          this.$Message.info('编辑成功！')
+        } else {
+          this.loading = false
+          this.$nextTick(() => (this.loading = true))
+          this.$Message.error('请检查输入数据')
+        }
+      })
     },
     cancel () {
       this.$emit('changeEvent', false)
