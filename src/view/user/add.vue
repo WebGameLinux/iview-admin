@@ -180,6 +180,9 @@ export default {
           this.loading = false
           this.$emit('changeEvent', false)
           this.$emit('editEvent', this.localItem)
+          setTimeout(() => {
+            this.$refs.table.resetFields()
+          }, 0)
           this.$Message.info('添加成功！')
         } else {
           this.loading = false

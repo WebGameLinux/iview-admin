@@ -8,7 +8,9 @@ const getUserList = (params) =>
 
 const updateUserById = (data) => axios.post('/admin/update-user', data)
 
-const deleteUserById = (id) => axios.get('/admin/delete-user?id=' + id)
+const updateUserBatchById = (data) => axios.post('/admin/update-user-settings', data)
+
+const deleteUserById = (ids) => axios.post('/admin/delete-user', { ids })
 
 const checkUsername = (username) => axios.get('/admin/checkname?username=' + username)
 
@@ -17,6 +19,7 @@ const addUser = (data) => axios.post('/admin/add-user', data)
 export {
   getUserList,
   updateUserById,
+  updateUserBatchById,
   deleteUserById,
   checkUsername,
   addUser

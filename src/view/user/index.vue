@@ -9,6 +9,7 @@
         :columns="columns"
         @on-row-edit="handleRowEdit"
         @on-row-remove="handleRowRemove"
+        @on-selection-change="handleSelect"
       >
         <template v-slot:table-header>
           <Button @click="handleAddUser" class="search-btn" type="primary">
@@ -18,8 +19,8 @@
       </tables>
       <Row type="flex" justify="space-between" align="middle">
         <Col class="ctrls">
-          <Button @click="handleSelectAll(true)">批量全选</Button>
-          <Button @click="handleSelectAll(false)">取消全选</Button>
+          <Button @click="handleDeleteBatch()">批量删除</Button>
+          <Button @click="handleSetBatch()">批量设置</Button>
           <Button style="margin: 10px 0;" type="primary" @click="exportExcel">
             <Icon type="md-download"></Icon>导出表格
           </Button>
@@ -46,6 +47,7 @@
       @changeEvent="handleChangeEvent"
     ></EditModel>
     <AddModel :isShow="showAdd" @editEvent="handleItemAdd" @changeEvent="handleAddChangeEvent"></AddModel>
+    <BatchSet :isShow="showSet" @editEvent="handleItemSet" @changeEvent="handleSetChangeEvent"></BatchSet>
   </div>
 </template>
 
@@ -53,19 +55,22 @@
 import {
   getUserList,
   updateUserById,
+  updateUserBatchById,
   deleteUserById,
   addUser
 } from '@/api/admin'
 import Tables from '_c/tables'
 import EditModel from './edit'
 import AddModel from './add'
+import BatchSet from './batchSet'
 import dayjs from 'dayjs'
 export default {
   name: 'user_management',
   components: {
     Tables,
     EditModel,
-    AddModel
+    AddModel,
+    BatchSet
   },
   data () {
     return {
@@ -74,6 +79,7 @@ export default {
       total: 0,
       showEdit: false,
       showAdd: false,
+      showSet: false,
       currentIndex: 0,
       currentItem: {},
       columns: [
@@ -148,13 +154,52 @@ export default {
         }
       ],
       pageArr: [10, 20, 30, 50, 100],
-      tableData: []
+      tableData: [],
+      selection: []
     }
   },
   mounted () {
     this._getList()
   },
   methods: {
+    handleDeleteBatch () {
+      // 批量进行删除
+      if (this.selection.length === 0) {
+        this.$Message.info('请选择需要删除的数据！')
+        return
+      }
+      const msg = this.selection.map((o) => o.username).join(',')
+      this.$Modal.confirm({
+        title: '确定删除用户吗？',
+        content: `删除${msg}的用户`,
+        onOk: () => {
+          const arr = this.selection.map((o) => o._id)
+          deleteUserById(arr).then((res) => {
+            // this.tableData.splice(index, 1)
+            this.tableData = this.tableData.filter(
+              (item) => !arr.includes(item._id)
+            )
+            this.$Message.success('删除成功！')
+            //  this._getList()
+          })
+        },
+        onCancel: () => {
+          this.$Message.info('取消操作！')
+        }
+      })
+    },
+    handleSetBatch () {
+      // 批量进行删除
+      if (this.selection.length === 0) {
+        this.$Message.info('请选择需要删除的数据！')
+        return
+      }
+      // 批量进行设置 -> vip, 禁言, 角色
+      this.showSet = true
+    },
+    handleSelect (selection) {
+      this.selection = selection
+    },
     handleAddUser () {
       this.showAdd = true
     },
@@ -164,6 +209,10 @@ export default {
     handleAddChangeEvent (value) {
       this.showAdd = value
     },
+    handleSetChangeEvent (value) {
+      this.showSet = value
+    },
+    // 添加模态框
     handleItemAdd (item) {
       addUser(item).then((res) => {
         if (res.code === 200) {
@@ -173,6 +222,7 @@ export default {
         }
       })
     },
+    // 编辑模态框
     handleItemEdit (item) {
       updateUserById(item).then((res) => {
         if (res.code === 200) {
@@ -182,6 +232,33 @@ export default {
         }
       })
       this.showEdit = false
+    },
+    // 批量设置模态框
+    handleItemSet (settings) {
+      console.log('handleItemSet -> settings', settings)
+      const msg = this.selection.map((o) => o.username).join(',')
+      this.$Modal.confirm({
+        title: '确定修改用户吗？',
+        content: `修改${msg}的用户`,
+        onOk: () => {
+          const arr = this.selection.map((o) => o._id)
+          updateUserBatchById({ ids: arr, settings }).then((res) => {
+            // this.tableData.splice(index, 1)
+            this.tableData = this.tableData.map((item) => {
+              if (arr.includes(item._id)) {
+                for (var keys of Object.keys(settings)) {
+                  item[keys] = settings[keys]
+                }
+              }
+            })
+            this.$Message.success('删除成功！')
+            //  this._getList()
+          })
+        },
+        onCancel: () => {
+          this.$Message.info('取消操作！')
+        }
+      })
     },
     handleRowEdit (row, index) {
       this.showEdit = true

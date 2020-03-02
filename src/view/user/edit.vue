@@ -161,6 +161,7 @@ export default {
       this.$refs.table.validate((valid) => {
         if (valid) {
           this.loading = false
+          // this.$refs.table.resetFields()
           this.$emit('changeEvent', false)
           this.$emit('editEvent', this.localItem)
           this.$Message.info('编辑成功！')
