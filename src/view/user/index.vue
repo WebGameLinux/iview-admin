@@ -43,7 +43,7 @@
 </template>
 
 <script>
-import { getUserList } from '@/api/admin'
+import { getUserList, updateUserById, deleteUserById } from '@/api/admin'
 import Tables from '_c/tables'
 import EditModel from './edit'
 import dayjs from 'dayjs'
@@ -144,7 +144,7 @@ export default {
       this.showEdit = value
     },
     handleItemEdit (item) {
-      updatePostById(item).then((res) => {
+      updateUserById(item).then((res) => {
         if (res.code === 200) {
           console.log('更新成功')
           // this.tableData[this.currentIndex] = item
@@ -160,9 +160,14 @@ export default {
     },
     handleRowRemove (row, index) {
       this.$Modal.confirm({
-        title: '确定删除文章吗？',
-        content: `删除第${index + 1}条数据，文章标题："${row.title}"的文章吗`,
-        onOk: () => {},
+        title: '确定删除用户吗？',
+        content: `删除${row.name}的用户`,
+        onOk: () => {
+          deleteUserById(row._id).then((res) => {
+            this.tableData.splice(index, 1)
+            this.$Message.success('删除成功！')
+          })
+        },
         onCancel: () => {
           this.$Message.info('取消操作！')
         }

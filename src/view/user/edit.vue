@@ -40,6 +40,7 @@
   </div>
 </template>
 <script>
+import { checkUsername } from '@/api/admin'
 const favPassCheck = (rule, value, callback) => {
   if (!value) {
     return callback(new Error('请输入用户积分'))
@@ -53,6 +54,20 @@ const favPassCheck = (rule, value, callback) => {
   } else {
     callback(new Error('请输入可以除以10的整数'))
   }
+}
+const userNamePassCheck = (rule, value, callback) => {
+  checkUsername(value).then((res) => {
+    if (res.code === 200) {
+      const data = res.data
+      if (data === 1) {
+        // 校验通过
+        callback()
+      } else if (data === 0) {
+        // 校验失败
+        callback(new Error('用户名冲突！请更换！'))
+      }
+    }
+  })
 }
 
 export default {
@@ -106,7 +121,8 @@ export default {
         ],
         username: [
           { required: true, message: '请输入登录名', trigger: 'blur' },
-          { type: 'email', message: '请检查邮箱格式', trigger: 'blur' }
+          { type: 'email', message: '请检查邮箱格式', trigger: 'blur' },
+          { validator: userNamePassCheck, trigger: 'blur' }
         ],
         password: [
           // { required: true, message: '请输入密码', trigger: 'blur' },
