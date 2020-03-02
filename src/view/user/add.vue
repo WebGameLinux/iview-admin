@@ -1,15 +1,18 @@
 <template>
   <div>
-    <Modal v-model="showStatus" title="编辑用户信息" @on-ok="ok" @on-cancel="cancel" :loading="loading">
+    <Modal v-model="showStatus" title="添加用户信息" @on-ok="ok" @on-cancel="cancel" :loading="loading">
       <Form :model="localItem" :label-width="80" :rules="ruleValidate" ref="table">
-        <FormItem label="用户昵称" prop="name">
-          <Input v-model="localItem.name" placeholder="请输入用户昵称"></Input>
-        </FormItem>
         <FormItem label="登录名" prop="username">
-          <Input v-model="localItem.username" placeholder="请输入登录名"></Input>
+          <Input prefix="md-mail" v-model="localItem.username" placeholder="请输入登录名"></Input>
         </FormItem>
         <FormItem label="密码" prop="password">
-          <Input v-model="localItem.password" placeholder="请输入密码"></Input>
+          <Input prefix="md-lock" v-model="localItem.password" placeholder="请输入密码"></Input>
+        </FormItem>
+        <FormItem label="用户昵称" prop="name">
+          <Input prefix="md-person" v-model="localItem.name" placeholder="请输入用户昵称"></Input>
+        </FormItem>
+        <FormItem label="手机" prop="mobile">
+          <Input v-model="localItem.mobile" placeholder="请输入用户手机号"></Input>
         </FormItem>
         <FormItem label="是否禁用">
           <RadioGroup v-model="localItem.status">
@@ -25,6 +28,18 @@
         </FormItem>
         <FormItem label="用户积分" prop="favs">
           <Input v-model="localItem.favs" style="width: 120px;"></Input>
+        </FormItem>
+        <FormItem label="所在城市">
+          <Input prefix="md-pin" v-model="localItem.location" placeholder="请输入用户所在城市"></Input>
+        </FormItem>
+        <FormItem label="性别">
+          <RadioGroup v-model="localItem.status">
+            <Radio label="0">男</Radio>
+            <Radio label="1">女</Radio>
+          </RadioGroup>
+        </FormItem>
+        <FormItem label="个性签名">
+          <Input type="textarea" v-model="localItem.regmark" placeholder="请输入用户个性签名"></Input>
         </FormItem>
         <!-- <FormItem label="标签">
           <Select v-model="formatTags" multiple>
@@ -55,11 +70,7 @@ const favPassCheck = (rule, value, callback) => {
     callback(new Error('请输入可以除以10的整数'))
   }
 }
-const userNamePassCheck = (rule, value, callback, vm) => {
-  if (vm.item.username === vm.localItem.username) {
-    callback()
-    return
-  }
+const userNamePassCheck = (rule, value, callback) => {
   checkUsername(value).then((res) => {
     if (res.code === 200) {
       const data = res.data
@@ -72,6 +83,13 @@ const userNamePassCheck = (rule, value, callback, vm) => {
       }
     }
   })
+}
+const mobileCheck = (rule, value, callback) => {
+  if (/^1[3456789]\d{9}$/.test(value)) {
+    callback()
+  } else {
+    callback(new Error('请检查手机格式！'))
+  }
 }
 
 export default {
@@ -87,7 +105,7 @@ export default {
   },
   watch: {
     item (newval, oldval) {
-      this.localItem = { ...newval }
+      this.localItem = newval
     },
     isShow () {
       this.showStatus = this.isShow
@@ -98,14 +116,16 @@ export default {
       loading: true,
       showStatus: false,
       tagsList: [],
-      oldName: '',
       localItem: {
-        _id: '',
         name: '',
         username: '',
         password: '',
         status: '0',
         favs: 100,
+        gender: '',
+        location: '',
+        mobile: '',
+        regmark: '用户很懒，什么都没有留下~',
         isVip: '0'
       },
       ruleValidate: {
@@ -127,14 +147,10 @@ export default {
         username: [
           { required: true, message: '请输入登录名', trigger: 'blur' },
           { type: 'email', message: '请检查邮箱格式', trigger: 'blur' },
-          {
-            validator: (rule, value, callback) =>
-              userNamePassCheck(rule, value, callback, this),
-            trigger: 'blur'
-          }
+          { validator: userNamePassCheck, trigger: 'blur' }
         ],
         password: [
-          // { required: true, message: '请输入密码', trigger: 'blur' },
+          { required: true, message: '请输入密码', trigger: 'blur' },
           {
             type: 'string',
             min: 6,
@@ -151,7 +167,8 @@ export default {
         favs: [
           // { required: true, message: '请输入用户积分', trigger: 'blur' },
           { validator: favPassCheck, trigger: 'change' }
-        ]
+        ],
+        mobile: [{ validator: mobileCheck, trigger: 'blur' }]
       }
     }
   },
@@ -163,7 +180,7 @@ export default {
           this.loading = false
           this.$emit('changeEvent', false)
           this.$emit('editEvent', this.localItem)
-          this.$Message.info('编辑成功！')
+          this.$Message.info('添加成功！')
         } else {
           this.loading = false
           this.$nextTick(() => (this.loading = true))

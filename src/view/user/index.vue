@@ -9,7 +9,13 @@
         :columns="columns"
         @on-row-edit="handleRowEdit"
         @on-row-remove="handleRowRemove"
-      />
+      >
+        <template v-slot:table-header>
+          <Button @click="handleAddUser" class="search-btn" type="primary">
+            <Icon type="md-person-add" />&nbsp;&nbsp;新增用户
+          </Button>
+        </template>
+      </tables>
       <Row type="flex" justify="space-between" align="middle">
         <Col class="ctrls">
           <Button @click="handleSelectAll(true)">批量全选</Button>
@@ -39,19 +45,27 @@
       @editEvent="handleItemEdit"
       @changeEvent="handleChangeEvent"
     ></EditModel>
+    <AddModel :isShow="showAdd" @editEvent="handleItemAdd" @changeEvent="handleAddChangeEvent"></AddModel>
   </div>
 </template>
 
 <script>
-import { getUserList, updateUserById, deleteUserById } from '@/api/admin'
+import {
+  getUserList,
+  updateUserById,
+  deleteUserById,
+  addUser
+} from '@/api/admin'
 import Tables from '_c/tables'
 import EditModel from './edit'
+import AddModel from './add'
 import dayjs from 'dayjs'
 export default {
   name: 'user_management',
   components: {
     Tables,
-    EditModel
+    EditModel,
+    AddModel
   },
   data () {
     return {
@@ -59,6 +73,7 @@ export default {
       limit: 10,
       total: 0,
       showEdit: false,
+      showAdd: false,
       currentIndex: 0,
       currentItem: {},
       columns: [
@@ -140,8 +155,23 @@ export default {
     this._getList()
   },
   methods: {
+    handleAddUser () {
+      this.showAdd = true
+    },
     handleChangeEvent (value) {
       this.showEdit = value
+    },
+    handleAddChangeEvent (value) {
+      this.showAdd = value
+    },
+    handleItemAdd (item) {
+      addUser(item).then((res) => {
+        if (res.code === 200) {
+          console.log('更新成功')
+          // this.tableData[this.currentIndex] = item
+          this.tableData.splice(0, 0, res.data)
+        }
+      })
     },
     handleItemEdit (item) {
       updateUserById(item).then((res) => {

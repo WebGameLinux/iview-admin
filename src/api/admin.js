@@ -12,9 +12,12 @@ const deleteUserById = (id) => axios.get('/admin/delete-user?id=' + id)
 
 const checkUsername = (username) => axios.get('/admin/checkname?username=' + username)
 
+const addUser = (data) => axios.post('/admin/add-user', data)
+
 export {
   getUserList,
   updateUserById,
   deleteUserById,
-  checkUsername
+  checkUsername,
+  addUser
 }
