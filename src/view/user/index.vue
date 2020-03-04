@@ -91,12 +91,18 @@ export default {
         {
           title: '用户昵称',
           key: 'name',
-          minWidth: 140
+          minWidth: 140,
+          search: {
+            type: 'input'
+          }
         },
         {
           title: '登录名',
           key: 'username',
-          minWidth: 160
+          minWidth: 160,
+          search: {
+            type: 'input'
+          }
         },
         {
           title: '角色',
@@ -105,12 +111,30 @@ export default {
           minWidth: 160,
           render: (h, params) => {
             return h('div', [h('span', params.row.roles.join(','))])
+          },
+          search: {
+            type: 'select',
+            options: [
+              {
+                key: '超级管理员',
+                value: 'super_admin'
+              },
+              {
+                key: '管理员',
+                value: 'admin'
+              },
+              {
+                key: '普通用户',
+                value: 'user'
+              }
+            ]
           }
         },
         {
           title: '积分',
           key: 'favs',
           align: 'center',
+          hidden: true,
           minWidth: 80
         },
         {
@@ -122,6 +146,23 @@ export default {
             return h('div', [
               h('span', params.row.status === '0' ? '否' : '是')
             ])
+          },
+          search: {
+            type: 'radio',
+            options: [
+              {
+                key: '全部',
+                value: ''
+              },
+              {
+                key: '否',
+                value: '0'
+              },
+              {
+                key: '是',
+                value: '1'
+              }
+            ]
           }
         },
         {
@@ -131,6 +172,23 @@ export default {
           minWidth: 120,
           render: (h, params) => {
             return h('div', [h('span', params.row.isVip === '0' ? '否' : '是')])
+          },
+          search: {
+            type: 'radio',
+            options: [
+              {
+                key: '全部',
+                value: ''
+              },
+              {
+                key: '否',
+                value: '0'
+              },
+              {
+                key: '是',
+                value: '1'
+              }
+            ]
           }
         },
         {
@@ -142,12 +200,16 @@ export default {
             return h('div', [
               h('span', dayjs(params.row.created).format('YYYY-MM-DD hh:mm:ss'))
             ])
+          },
+          search: {
+            type: 'date'
           }
         },
         {
           title: '设置',
           key: 'settings',
           slot: 'action',
+          hidden: true,
           fixed: 'right',
           width: 100,
           align: 'center'
