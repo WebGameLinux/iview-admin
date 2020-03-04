@@ -88,7 +88,8 @@ export default {
         {
           type: 'selection',
           width: 60,
-          align: 'center'
+          align: 'center',
+          hidden: true
         },
         {
           title: '用户昵称',
@@ -355,9 +356,11 @@ export default {
     },
     onPageChange (page) {
       this.page = page
+      this._getList()
     },
     onPageSizeChange (size) {
       this.limit = size
+      this._getList()
     },
     exportExcel () {
       this.$refs.tables.exportCsv({
