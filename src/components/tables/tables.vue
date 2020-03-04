@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="searchable && searchPlace === 'top'" class="search-con search-con-top">
-      <Select v-model="searchKey" class="search-col" @on-select="handleSelect">
+      <Select class="search-col" @on-select="handleSelect">
         <template v-for="(item,index) in columns">
           <Option
             :value="index"
@@ -10,7 +10,7 @@
           >{{ item.title }}</Option>
         </template>
       </Select>
-      <Search :item="chooseItem"></Search>
+      <Search :value="searchValue" :item="chooseItem" @changeEvent="handleSearchInput"></Search>
       <Button @click="handleSearch" class="search-btn" type="primary">
         <Icon type="md-search" />&nbsp;&nbsp;搜索
       </Button>
@@ -184,7 +184,10 @@ export default {
     handleSelect (index) {
       const idx = index.value
       this.chooseItem = this.columns[idx].search
-      console.log('handleSelect -> this.chooseItem', this.chooseItem)
+      this.searchKey = this.columns[idx].key
+      this.searchValue = ['select', 'date'].includes(this.chooseItem.type)
+        ? []
+        : ''
     },
     suportEdit (item, index) {
       item.render = (h, params) => {
@@ -256,9 +259,20 @@ export default {
             : ''
     },
     handleSearch () {
+      this.$emit('searchEvent', {
+        item: this.searchKey,
+        search: this.searchValue
+      })
       // this.insideTableData = this.value.filter(
       //   (item) => item[this.searchKey].indexOf(this.searchValue) > -1
       // )
+    },
+    handleSearchInput (item) {
+      if (this.chooseItem.type === 'input') {
+        this.searchValue = item.target.value // 取得Input组件中的数据
+      } else {
+        this.searchValue = item
+      }
     },
     handleTableData () {
       this.insideTableData = this.value.map((item, index) => {

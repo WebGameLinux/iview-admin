@@ -10,6 +10,7 @@
         @on-row-edit="handleRowEdit"
         @on-row-remove="handleRowRemove"
         @on-selection-change="handleSelect"
+        @searchEvent="handleSearch"
       >
         <template v-slot:table-header>
           <Button @click="handleAddUser" class="search-btn" type="primary">
@@ -77,6 +78,7 @@ export default {
       page: 1,
       limit: 10,
       total: 0,
+      option: {},
       showEdit: false,
       showAdd: false,
       showSet: false,
@@ -278,7 +280,6 @@ export default {
     handleItemAdd (item) {
       addUser(item).then((res) => {
         if (res.code === 200) {
-          console.log('更新成功')
           // this.tableData[this.currentIndex] = item
           this.tableData.splice(0, 0, res.data)
         }
@@ -288,7 +289,6 @@ export default {
     handleItemEdit (item) {
       updateUserById(item).then((res) => {
         if (res.code === 200) {
-          console.log('更新成功')
           // this.tableData[this.currentIndex] = item
           this.tableData.splice(this.currentIndex, 1, item)
         }
@@ -297,7 +297,6 @@ export default {
     },
     // 批量设置模态框
     handleItemSet (settings) {
-      console.log('handleItemSet -> settings', settings)
       const msg = this.selection.map((o) => o.username).join(',')
       this.$Modal.confirm({
         title: '确定修改用户吗？',
@@ -342,6 +341,18 @@ export default {
         }
       })
     },
+    handleSearch (value) {
+      // 判断是否有新的查询内容的传递，把分页数据归0
+      if (
+        (typeof this.option.search !== 'undefined' &&
+          value.search !== this.option.search) ||
+        this.option === {}
+      ) {
+        this.page = 1 // 从1开始
+      }
+      this.option = value
+      this._getList()
+    },
     onPageChange (page) {
       this.page = page
     },
@@ -354,7 +365,11 @@ export default {
       })
     },
     _getList () {
-      getUserList({ page: this.page - 1, limit: this.limit }).then((res) => {
+      getUserList({
+        page: this.page - 1,
+        limit: this.limit,
+        option: this.option
+      }).then((res) => {
         this.tableData = res.data
         this.total = res.total
       })
