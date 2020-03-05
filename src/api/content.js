@@ -6,12 +6,16 @@ const getList = (options) => {
   return axios.get('/public/list?' + qs.stringify(options))
 }
 
-const deletePostById = (id) => {
-  return axios.get('/content/delete?tid=' + id)
+const deletePostById = (ids) => {
+  return axios.post('/content/delete', { ids })
 }
 
 const updatePostById = (data) => {
   return axios.post('/content/update-id', data)
+}
+
+const updatePostBatchById = (data) => {
+  return axios.post('/content/update-post-settings', data)
 }
 
 // 内容管理 -> 标签管理
@@ -38,5 +42,6 @@ export {
   getTags,
   addTag,
   removeTag,
-  updateTag
+  updateTag,
+  updatePostBatchById
 }

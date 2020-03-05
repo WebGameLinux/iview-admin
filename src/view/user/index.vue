@@ -313,7 +313,7 @@ export default {
                 }
               }
             })
-            this.$Message.success('删除成功！')
+            this.$Message.success('批量设置成功！')
             //  this._getList()
           })
         },
