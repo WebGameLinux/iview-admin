@@ -343,7 +343,7 @@ export default {
           const arr = this.selection.map((o) => o._id)
           updatePostBatchById({ ids: arr, settings }).then((res) => {
             // this.tableData.splice(index, 1)
-            this.tableData = this.tableData.map((item) => {
+            this.tableData.map((item) => {
               if (arr.includes(item._id)) {
                 for (var keys of Object.keys(settings)) {
                   item[keys] = settings[keys]
@@ -388,6 +388,7 @@ export default {
       })
     },
     handleSearch (value) {
+      console.log('handleSearch -> value', value)
       // 判断是否有新的查询内容的传递，把分页数据归0
       if (
         (typeof this.option.search !== 'undefined' &&
@@ -396,7 +397,10 @@ export default {
       ) {
         this.page = 1 // 从1开始
       }
-      this.option = value
+      if (value.item === 'tags') {
+        value.item = 'tag'
+      }
+      this.option[value.item] = value.search
       this._getList()
     },
     exportExcel () {
@@ -416,7 +420,7 @@ export default {
       getList({
         page: this.page - 1,
         limit: this.limit,
-        option: this.option
+        ...this.option
       }).then((res) => {
         // 方法一： -> 修改getList接口
         // const data = res.data
