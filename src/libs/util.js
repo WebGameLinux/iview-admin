@@ -439,3 +439,7 @@ export const moment = (date) => {
       .from(dayjs())
   }
 }
+
+export const sortObj = (arr, property) => {
+  return arr.sort((m, n) => m[property] - n[property])
+}
