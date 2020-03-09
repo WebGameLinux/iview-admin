@@ -5,20 +5,20 @@
       searchable
       search-place="top"
       :columns="columns"
-      v-model="tableData"
+      v-model="localData"
       @on-row-edit="handleRowEdit"
       @on-row-remove="handleRowRemove"
       @on-selection-change="handleSelect"
       @searchEvent="handleSearch"
     >
       <template v-slot:table-header>
-        <Button @click="handleAdd" class="search-btn" type="primary">
+        <Button @click="handleAdd" class="search-btn" type="primary" v-if="isEdit">
           <Icon type="md-person-add" />&nbsp;&nbsp;添加
         </Button>
       </template>
     </tables>
     <Row type="flex" justify="space-between" align="middle">
-      <Col class="ctrls">
+      <Col class="ctrls" v-if="isEdit">
         <Button @click="handleDeleteBatch()">批量删除</Button>
         <Button @click="handleSetBatch()">批量设置</Button>
       </Col>
@@ -37,11 +37,13 @@
         />
       </Col>
     </Row>
+    <AddModel :isShow="showAdd" @editEvent="handleItemAdd" @changeEvent="handleAddChangeEvent"></AddModel>
   </div>
 </template>
 
 <script>
 import Tables from '_c/tables'
+import AddModel from './operations/add'
 export default {
   props: {
     columns: {
@@ -51,17 +53,33 @@ export default {
     tableData: {
       type: Array,
       default: () => []
+    },
+    isEdit: {
+      type: Boolean,
+      default: false
     }
   },
   components: {
-    Tables
+    Tables,
+    AddModel
   },
   data () {
     return {
+      showAdd: false,
       page: 1,
       limit: 10,
       total: 0,
       pageArr: [10, 20, 30, 50, 100]
+    }
+  },
+  computed: {
+    localData: {
+      get: function () {
+        return this.tableData
+      },
+      set: function (value) {
+        console.log('value', value)
+      }
     }
   },
   methods: {
@@ -82,8 +100,8 @@ export default {
         onOk: () => {
           const arr = this.selection.map((o) => o._id)
           deleteUserById(arr).then((res) => {
-            // this.tableData.splice(index, 1)
-            this.tableData = this.tableData.filter(
+            // this.localData.splice(index, 1)
+            this.localData = this.localData.filter(
               (item) => !arr.includes(item._id)
             )
             this.$Message.success('删除成功！')
@@ -104,7 +122,15 @@ export default {
       // 批量进行设置 -> vip, 禁言, 角色
       this.showSet = true
     },
-    handleAdd () {},
+    handleAdd () {
+      this.showAdd = true
+    },
+    handleItemAdd (item) {
+      this.localData.push(item)
+    },
+    handleAddChangeEvent (value) {
+      this.showAdd = value
+    },
     onPageChange (page) {
       this.page = page
     },

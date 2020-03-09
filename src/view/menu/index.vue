@@ -30,7 +30,7 @@
           ></MenuForm>
         </Card>
         <Card :title="$t('resources')" :dis-hover="true" :shadow="true">
-          <OperationsTable :columns="columns" :tableData="tableData"></OperationsTable>
+          <OperationsTable :columns="columns" :tableData="tableData" :isEdit="isEdit"></OperationsTable>
         </Card>
       </i-col>
     </Row>
@@ -79,20 +79,26 @@ export default {
           key: 'name',
           search: {
             type: 'input'
-          }
+          },
+          align: 'center'
         },
         {
           title: '资源路径',
           key: 'path',
           search: {
             type: 'input'
-          }
+          },
+          align: 'center'
         },
         {
           title: '请求类型',
-          key: 'methods',
+          key: 'method',
           search: {
             type: 'input'
+          },
+          align: 'center',
+          render: (h, params) => {
+            return h('div', params.row.method.toUpperCase())
           }
         },
         {
@@ -114,7 +120,8 @@ export default {
                 value: 'btn'
               }
             ]
-          }
+          },
+          align: 'center'
         },
         {
           title: '资源描述',
