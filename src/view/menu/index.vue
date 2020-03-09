@@ -153,12 +153,15 @@ export default {
   },
   methods: {
     handleTreeChange (item) {
+      if (item.length === 0) {
+        return
+      }
       // 非编辑状态
       if (!this.isEdit) {
         this.selectNode = item
         this.formData = item[0]
         if (item[0].operations && item[0].operations.length > 0) {
-          this.tableData = item[0].operations
+          this.tableData = [...item[0].operations]
         }
       } else {
         this.$Message.error('当前为编辑状态，请取消编辑后查看！')
@@ -229,7 +232,6 @@ export default {
       this.tableData = []
     },
     handleTableChange (table) {
-      console.log('handleTableChange -> table', table)
       this.tableData = table
     }
   }

@@ -256,7 +256,7 @@ export default {
     handleSetBatch () {
       // 批量进行删除
       if (this.selection.length === 0) {
-        this.$Message.info('请选择需要删除的数据！')
+        this.$Message.info('请选择需要设置的数据！')
         return
       }
       // 批量进行设置 -> vip, 禁言, 角色

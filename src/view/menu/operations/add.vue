@@ -1,6 +1,12 @@
 <template>
   <div>
-    <Modal v-model="showStatus" title="添加资源信息" @on-ok="ok" @on-cancel="cancel" :loading="loading">
+    <Modal
+      v-model="showStatus"
+      :title="(!isEdit ?'添加':'编辑') + '资源信息'"
+      @on-ok="ok"
+      @on-cancel="cancel"
+      :loading="loading"
+    >
       <Form :model="localItem" :label-width="80" :rules="ruleValidate" ref="table">
         <FormItem label="资源名称" prop="name">
           <Input v-model="localItem.name" placeholder="请输入资源名称"></Input>
@@ -32,6 +38,10 @@
 <script>
 export default {
   props: {
+    isEdit: {
+      type: Boolean,
+      default: false
+    },
     isShow: {
       type: Boolean,
       default: false
@@ -43,7 +53,7 @@ export default {
   },
   watch: {
     item (newval, oldval) {
-      this.localItem = newval
+      this.localItem = { ...newval }
     },
     isShow () {
       this.showStatus = this.isShow
