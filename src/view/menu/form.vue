@@ -1,8 +1,8 @@
 <template>
   <div>
     <Form :disabled="!isEdit" ref="form" :model="formData" :rules="formRules" :label-width="80">
-      <FormItem label="菜单标题" prop="name">
-        <i-input v-model="formData.name" placeholder="请输入菜单名称"></i-input>
+      <FormItem label="菜单标题" prop="title">
+        <i-input v-model="formData.title" placeholder="请输入菜单名称"></i-input>
       </FormItem>
       <FormItem label="路径" prop="path">
         <i-input v-model="formData.path" placeholder="请输入菜单路由"></i-input>
@@ -65,7 +65,7 @@ export default {
   data () {
     return {
       formRules: {
-        name: [
+        title: [
           {
             required: true,
             message: '菜单名称不得为空',
@@ -98,7 +98,6 @@ export default {
             ...this.formData,
             expand: true
           }
-          data.title = this.formData.name
           this.$emit('submit', data)
           // 恢复到默认状态
           this.initFields()

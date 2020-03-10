@@ -46,7 +46,14 @@
 import TreeMenu from './tree.vue'
 import MenuForm from './form.vue'
 import OperationsTable from './operations.vue'
-import { sortObj, updateNode, insertNode, deleteNode } from '@/libs/util'
+import {
+  sortObj,
+  updateNode,
+  insertNode,
+  deleteNode,
+  getNode
+} from '@/libs/util'
+import { addMenu, getMenu, updateMenu, deleteMenu } from '@/api/admin'
 export default {
   components: {
     TreeMenu,
@@ -60,7 +67,7 @@ export default {
       selectNode: [],
       menuData: [],
       formData: {
-        name: '',
+        title: '',
         path: '',
         component: '',
         hideInBread: false,
@@ -150,8 +157,16 @@ export default {
   },
   mounted () {
     window.vue = this
+    this._getMenu()
   },
   methods: {
+    _getMenu () {
+      getMenu().then((res) => {
+        if (res.code === 200) {
+          this.menuData = res.data
+        }
+      })
+    },
     handleTreeChange (item) {
       if (item.length === 0) {
         return
@@ -177,10 +192,26 @@ export default {
       this.formData = select
     },
     deleteMenu (select) {
+      // 判断是删除一级菜单 还是删除子菜单
+      const parent = getNode(this.menuData, select)
+      if (parent.nodeKey !== select.nodeKey) {
+        // 删除子菜单
+        updateMenu(parent).then((res) => {
+          if (res.code === 200) {
+            this.$Message.success('删除子菜单成功！')
+          }
+        })
+      } else {
+        deleteMenu({ _id: parent._id }).then((res) => {
+          if (res.code === 200) {
+            this.$Message.success('删除菜单成功！')
+          }
+        })
+      }
       this.menuData = deleteNode(this.menuData, select)
     },
     submit (data) {
-      data.title = this.formData.name
+      let parent = getNode(this.menuData, this.selectNode[0])
       if (this.tableData.length > 0) {
         data.operations = this.tableData
       }
@@ -192,10 +223,31 @@ export default {
         if (this.menuData.length === 0) {
           this.menuData.push(data)
           this.initForm()
+          addMenu(data).then((res) => {
+            if (res.code === 200) {
+              this.$Message.success('添加菜单成功！')
+            }
+          })
         } else {
-          // this.selectNode.length > 0
           const selectNode = this.selectNode[0]
           this.menuData = insertNode(this.menuData, selectNode, data)
+          // 1. 可能是一级节点的兄弟节点  -> addMenu -> menu
+          if (parent.nodeKey === selectNode.nodeKey) {
+            addMenu(data).then((res) => {
+              if (res.code === 200) {
+                this.$Message.success('添加菜单成功！')
+              }
+            })
+          } else {
+            // 2. 可能是二级节点的兄弟节点 -> parent 一级节点 -> updateMenu
+            parent = getNode(this.menuData, selectNode)
+            updateMenu(parent).then((res) => {
+              if (res.code === 200) {
+                this.$Message.success('添加菜单成功！')
+              }
+            })
+          }
+          // this.selectNode.length > 0
         }
       } else if (this.type === 'child') {
         // 子节点
@@ -207,10 +259,24 @@ export default {
           // 排序？
           this.$set(this.selectNode[0], 'children', arr)
         }
+        parent = getNode(this.menuData, this.selectNode[0])
+        // 更新操作
+        updateMenu(parent).then((res) => {
+          if (res.code === 200) {
+            this.$Message.success('添加子菜单成功！')
+          }
+        })
       } else {
         // 更新菜单节点
         this.menuData = updateNode(this.menuData, data)
         this.$set(this.selectNode, 0, data)
+        parent = getNode(this.menuData, this.selectNode[0])
+        // 更新操作
+        updateMenu(parent).then((res) => {
+          if (res.code === 200) {
+            this.$Message.success('更新菜单成功！')
+          }
+        })
       }
     },
     initForm () {
