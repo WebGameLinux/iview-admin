@@ -74,6 +74,7 @@ export default {
       this.$emit('on-change', this.localData)
     },
     tableData (newval, oldval) {
+      console.log('tableData -> newval', newval)
       this.localData = newval
     }
   },

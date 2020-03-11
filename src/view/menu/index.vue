@@ -156,7 +156,6 @@ export default {
     }
   },
   mounted () {
-    window.vue = this
     this._getMenu()
   },
   methods: {
@@ -175,9 +174,9 @@ export default {
       if (!this.isEdit) {
         this.selectNode = item
         this.formData = item[0]
-        if (item[0].operations && item[0].operations.length > 0) {
-          this.tableData = [...item[0].operations]
-        }
+        // if (item[0].operations && item[0].operations.length > 0) {
+        this.tableData = [...item[0].operations]
+        // }
       } else {
         this.$Message.error('当前为编辑状态，请取消编辑后查看！')
       }

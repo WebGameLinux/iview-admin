@@ -18,10 +18,16 @@
               :class="{'selected': roleIndex === index}"
               @click="selectRole(index)"
             >
-              <div class="flex1 round">{{ item.title }}</div>
+              <div class="flex1 round">{{ item.name }}</div>
               <span>
-                <Icon type="md-build" size="22" color="#2d8cf0" @click.stop="editRole(item,index)"></Icon>
-                <Icon type="md-trash" size="22" color="#ed4014"></Icon>
+                <Icon type="ios-create" size="16" @click.stop="editLabel(item,index)"></Icon>
+                <Icon type="md-build" size="16" color="#2d8cf0" @click.stop="editRole(item,index)"></Icon>
+                <Icon
+                  type="md-trash"
+                  size="16"
+                  color="#ed4014"
+                  @click.stop="deleteRole(item,index)"
+                ></Icon>
               </span>
             </li>
           </ul>
@@ -35,7 +41,7 @@
               <Button size="small" icon="md-trash" @click="cancel()">取消</Button>
             </ButtonGroup>
           </div>
-          <Tree :data="menuData" show-checkbox></Tree>
+          <Tree :data="menuData" show-checkbox @on-select-change="handleTreeChange"></Tree>
         </Card>
       </i-col>
       <i-col span="13" :sm="24" :md="16" :lg="13">
@@ -49,8 +55,14 @@
         </Card>
       </i-col>
     </i-row>
-    <Modal v-model="showAdd" title="添加角色" @on-ok="modelSubmit()" @on-cancel="modelCancel()">
-      <Form :model="formItem" :label-width="80" :rules="formRules">
+    <Modal
+      v-model="showAdd"
+      title="添加角色"
+      @on-ok="modelSubmit()"
+      @on-cancel="modelCancel()"
+      :loading="loading"
+    >
+      <Form :model="formItem" :label-width="80" :rules="formRules" ref="form">
         <FormItem label="角色名称" prop="name">
           <Input v-model="formItem.name" placeholder="请输入角色名称"></Input>
         </FormItem>
@@ -67,6 +79,7 @@
 
 <script>
 import OperationsTable from './operations.vue'
+import { getMenu } from '@/api/admin'
 export default {
   components: {
     OperationsTable
@@ -75,23 +88,10 @@ export default {
     return {
       isEdit: false,
       showAdd: false,
-      roles: [
-        {
-          title: 'parent 1'
-        },
-        {
-          title: 'parent 2'
-        },
-        {
-          title: 'parent 3'
-        },
-        {
-          title: 'parent 4'
-        },
-        {
-          title: 'parent 5'
-        }
-      ],
+      modelEdit: false,
+      editIndex: '',
+      loading: true,
+      roles: [],
       roleIndex: '',
       formItem: {
         name: '',
@@ -101,38 +101,7 @@ export default {
         name: [{ required: true, message: '请输入角色名称', trigger: 'blur' }],
         role: [{ required: true, message: '请输入角色编码', trigger: 'blur' }]
       },
-      menuData: [
-        {
-          title: 'parent 1',
-          expand: true,
-          children: [
-            {
-              title: 'parent 1-1',
-              expand: true,
-              children: [
-                {
-                  title: 'leaf 1-1-1'
-                },
-                {
-                  title: 'leaf 1-1-2'
-                }
-              ]
-            },
-            {
-              title: 'parent 1-2',
-              expand: true,
-              children: [
-                {
-                  title: 'leaf 1-2-1'
-                },
-                {
-                  title: 'leaf 1-2-1'
-                }
-              ]
-            }
-          ]
-        }
-      ],
+      menuData: [],
       selectNode: [],
       columns: [
         {
@@ -201,7 +170,17 @@ export default {
       tableData: []
     }
   },
+  mounted () {
+    this._getMenu()
+  },
   methods: {
+    _getMenu () {
+      getMenu().then((res) => {
+        if (res.code === 200) {
+          this.menuData = res.data
+        }
+      })
+    },
     addRole () {
       this.showAdd = true
     },
@@ -216,27 +195,71 @@ export default {
       this.isEdit = true
       this.roleIndex = index
     },
+    editLabel (item, index) {
+      this.modelEdit = true
+      this.editIndex = index
+      this.showAdd = true
+      this.formItem = { ...item }
+    },
+    deleteRole (item, index) {
+      this.$Modal.confirm({
+        title: '确定删除吗？',
+        content: `确定删除${item.name}的角色吗？`,
+        onOk: () => {
+          this.roles.splice(index, 1)
+          this.$Message.success('成功删除！')
+          //  this._getList()
+        },
+        onCancel: () => {
+          this.$Message.info('取消操作！')
+        }
+      })
+    },
     submit () {
       this.isEdit = false
     },
     cancel () {
       this.isEdit = false
     },
-    modelSubmit () {},
-    modelCacnel () {},
+    modelSubmit () {
+      this.$refs.form.validate((valid) => {
+        if (valid) {
+          // 检验通过后的逻辑
+          // 1. 获取表单的信息
+          if (this.modelEdit) {
+            // editIndex
+            this.roles.splice(this.editIndex, 1, { ...this.formItem })
+          } else {
+            this.roles.push({ ...this.formItem })
+          }
+          // 2. 发送创建角色的请求
+          // 3. 清空表单信息
+          this.$Message.info('添加成功！')
+          this.initForm()
+        } else {
+          this.loading = false
+          this.$nextTick(() => (this.loading = true))
+          this.$Message.error('请检验表单数据！')
+        }
+      })
+    },
+    initForm () {
+      this.loading = false
+      this.showAdd = false
+      this.modelEdit = false
+      setTimeout(() => {
+        this.$refs.form.resetFields()
+      }, 0)
+    },
+    modelCancel () {
+      this.initForm()
+    },
     handleTreeChange (item) {
       if (item.length === 0) {
         return
       }
-      // 非编辑状态
-      if (!this.isEdit) {
-        this.selectNode = item
-        if (item[0].operations && item[0].operations.length > 0) {
-          this.tableData = [...item[0].operations]
-        }
-      } else {
-        this.$Message.error('当前为编辑状态，请取消编辑后查看！')
-      }
+      this.selectNode = item
+      this.tableData = [...item[0].operations]
     },
     handleTableChange (table) {
       this.tableData = table
@@ -254,8 +277,8 @@ export default {
   span {
     display: none;
     // float: right;
-    i:first-child {
-      margin-right: 7px;
+    i {
+      margin-right: 5px;
     }
   }
   // selected #d5e8fc
