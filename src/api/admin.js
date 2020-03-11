@@ -26,6 +26,14 @@ const updateMenu = (data) => axios.post('/admin/update-menu', data)
 
 const deleteMenu = (data) => axios.post('/admin/delete-menu', data)
 
+const addRole = (data) => axios.post('/admin/add-role', data)
+
+const getRoles = () => axios.get('/admin/get-roles')
+
+const updateRole = (data) => axios.post('/admin/update-role', data)
+
+const deleteRole = (data) => axios.post('/admin/delete-role', data)
+
 export {
   getUserList,
   updateUserById,
@@ -36,5 +44,9 @@ export {
   addMenu,
   getMenu,
   updateMenu,
-  deleteMenu
+  deleteMenu,
+  addRole,
+  getRoles,
+  updateRole,
+  deleteRole
 }
