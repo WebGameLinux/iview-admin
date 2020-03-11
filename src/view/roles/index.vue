@@ -1,13 +1,13 @@
 <template>
   <div>
     <i-row :gutter="10">
-      <i-col span="5">
+      <i-col span="5" :sm="24" :md="24" :lg="5">
         <Card :dis-hover="true" :shadow="true">
           <!-- <Tree :data="roles"></Tree> -->
           <p slot="title">
             <Icon type="md-contacts"></Icon>角色列表
           </p>
-          <a href="#" slot="extra">
+          <a slot="extra" @click.prevent="addRole()" v-if="!isEdit">
             <Icon type="md-add"></Icon>新增
           </a>
           <ul class="imooc-card">
@@ -20,20 +20,26 @@
             >
               <div class="flex1 round">{{ item.title }}</div>
               <span>
-                <Icon type="md-build" size="22" color="#2d8cf0"></Icon>
+                <Icon type="md-build" size="22" color="#2d8cf0" @click.stop="editRole(item,index)"></Icon>
                 <Icon type="md-trash" size="22" color="#ed4014"></Icon>
               </span>
             </li>
           </ul>
         </Card>
       </i-col>
-      <i-col span="6">
-        <Card :dis-hover="true" :shadow="true">
+      <i-col span="6" :sm="24" :md="8" :lg="6">
+        <Card :dis-hover="true" :shadow="true" title="菜单权限" icon="md-menu">
+          <div href="#" slot="extra">
+            <ButtonGroup class="imooc-btn-group" v-if="isEdit">
+              <Button size="small" icon="ios-create" type="primary" @click="submit()">确定</Button>
+              <Button size="small" icon="md-trash" @click="cancel()">取消</Button>
+            </ButtonGroup>
+          </div>
           <Tree :data="menuData" show-checkbox></Tree>
         </Card>
       </i-col>
-      <i-col span="13">
-        <Card :title="$t('resources')" :dis-hover="true" :shadow="true">
+      <i-col span="13" :sm="24" :md="16" :lg="13">
+        <Card :title="$t('resources')" icon="md-exit" :dis-hover="true" :shadow="true">
           <OperationsTable
             :columns="columns"
             :tableData="tableData"
@@ -43,11 +49,24 @@
         </Card>
       </i-col>
     </i-row>
+    <Modal v-model="showAdd" title="添加角色" @on-ok="modelSubmit()" @on-cancel="modelCancel()">
+      <Form :model="formItem" :label-width="80" :rules="formRules">
+        <FormItem label="角色名称" prop="name">
+          <Input v-model="formItem.name" placeholder="请输入角色名称"></Input>
+        </FormItem>
+        <FormItem label="角色编码" prop="role">
+          <Input v-model="formItem.role" placeholder="请输入角色编码"></Input>
+        </FormItem>
+        <FormItem label="角色描述">
+          <Input v-model="formItem.desc" placeholder="请输入角色描述"></Input>
+        </FormItem>
+      </Form>
+    </Modal>
   </div>
 </template>
 
 <script>
-import OperationsTable from '@/view/menu/operations.vue'
+import OperationsTable from './operations.vue'
 export default {
   components: {
     OperationsTable
@@ -55,6 +74,7 @@ export default {
   data () {
     return {
       isEdit: false,
+      showAdd: false,
       roles: [
         {
           title: 'parent 1'
@@ -73,6 +93,14 @@ export default {
         }
       ],
       roleIndex: '',
+      formItem: {
+        name: '',
+        desc: ''
+      },
+      formRules: {
+        name: [{ required: true, message: '请输入角色名称', trigger: 'blur' }],
+        role: [{ required: true, message: '请输入角色编码', trigger: 'blur' }]
+      },
       menuData: [
         {
           title: 'parent 1',
@@ -174,6 +202,9 @@ export default {
     }
   },
   methods: {
+    addRole () {
+      this.showAdd = true
+    },
     selectRole (value) {
       if (this.roleIndex === '' || this.roleIndex !== value) {
         this.roleIndex = value
@@ -181,9 +212,18 @@ export default {
         this.roleIndex = ''
       }
     },
-    addMenu () {},
-    editMenu () {},
-    deleteMenu () {},
+    editRole (item, index) {
+      this.isEdit = true
+      this.roleIndex = index
+    },
+    submit () {
+      this.isEdit = false
+    },
+    cancel () {
+      this.isEdit = false
+    },
+    modelSubmit () {},
+    modelCacnel () {},
     handleTreeChange (item) {
       if (item.length === 0) {
         return
