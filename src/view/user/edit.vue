@@ -11,6 +11,15 @@
         <FormItem label="密码" prop="password">
           <Input v-model="localItem.password" placeholder="请输入密码"></Input>
         </FormItem>
+        <FormItem label="角色" prop="roles">
+          <Select v-model="localItem.roles" multiple>
+            <Option
+              v-for="(item,index) in roles"
+              :value="item.role"
+              :key="'roles-' + index"
+            >{{ item.name }}</Option>
+          </Select>
+        </FormItem>
         <FormItem label="是否禁用">
           <RadioGroup v-model="localItem.status">
             <Radio label="0">否</Radio>
@@ -83,6 +92,10 @@ export default {
     item: {
       type: Object,
       default: () => {}
+    },
+    roles: {
+      type: Array,
+      default: () => []
     }
   },
   watch: {
@@ -104,6 +117,7 @@ export default {
         name: '',
         username: '',
         password: '',
+        roles: [],
         status: '0',
         favs: 100,
         isVip: '0'
@@ -133,6 +147,7 @@ export default {
             trigger: 'blur'
           }
         ],
+        roles: [{ required: true, message: '请选择用户角色', trigger: 'blur' }],
         password: [
           // { required: true, message: '请输入密码', trigger: 'blur' },
           {

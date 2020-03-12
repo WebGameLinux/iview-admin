@@ -44,11 +44,22 @@
     <EditModel
       :isShow="showEdit"
       :item="currentItem"
+      :roles="roles"
       @editEvent="handleItemEdit"
       @changeEvent="handleChangeEvent"
     ></EditModel>
-    <AddModel :isShow="showAdd" @editEvent="handleItemAdd" @changeEvent="handleAddChangeEvent"></AddModel>
-    <BatchSet :isShow="showSet" @editEvent="handleItemSet" @changeEvent="handleSetChangeEvent"></BatchSet>
+    <AddModel
+      :isShow="showAdd"
+      :roles="roles"
+      @editEvent="handleItemAdd"
+      @changeEvent="handleAddChangeEvent"
+    ></AddModel>
+    <BatchSet
+      :isShow="showSet"
+      :roles="roles"
+      @editEvent="handleItemSet"
+      @changeEvent="handleSetChangeEvent"
+    ></BatchSet>
   </div>
 </template>
 
@@ -58,7 +69,8 @@ import {
   updateUserById,
   updateUserBatchById,
   deleteUserById,
-  addUser
+  addUser,
+  getRoleNames
 } from '@/api/admin'
 import Tables from '_c/tables'
 import EditModel from './edit'
@@ -66,7 +78,7 @@ import AddModel from './add'
 import BatchSet from './batchSet'
 import dayjs from 'dayjs'
 export default {
-  name: 'user_management',
+  name: 'menu_management', // => 等价于notCache
   components: {
     Tables,
     EditModel,
@@ -79,6 +91,7 @@ export default {
       limit: 10,
       total: 0,
       option: {},
+      roles: [],
       showEdit: false,
       showAdd: false,
       showSet: false,
@@ -113,7 +126,10 @@ export default {
           align: 'center',
           minWidth: 160,
           render: (h, params) => {
-            return h('div', [h('span', params.row.roles.join(','))])
+            const roleNames = params.row.roles
+              .map((o) => this.roleNames[o])
+              .join(',')
+            return h('div', [h('span', roleNames)])
           },
           search: {
             type: 'select',
@@ -223,8 +239,18 @@ export default {
       selection: []
     }
   },
+  computed: {
+    roleNames () {
+      const tmp = {}
+      this.roles.forEach((item) => {
+        tmp[item.role] = item.name
+      })
+      return tmp
+    }
+  },
   mounted () {
     this._getList()
+    this._getRoleNames()
   },
   methods: {
     handleDeleteBatch () {
@@ -375,6 +401,13 @@ export default {
       }).then((res) => {
         this.tableData = res.data
         this.total = res.total
+      })
+    },
+    _getRoleNames () {
+      getRoleNames().then((res) => {
+        if (res.code === 200) {
+          this.roles = res.data
+        }
       })
     }
   }

@@ -8,6 +8,15 @@
         <FormItem label="密码" prop="password">
           <Input prefix="md-lock" v-model="localItem.password" placeholder="请输入密码"></Input>
         </FormItem>
+        <FormItem label="角色" prop="roles">
+          <Select v-model="localItem.roles" multiple>
+            <Option
+              v-for="(item,index) in roles"
+              :value="item.role"
+              :key="'roles-' + index"
+            >{{ item.name }}</Option>
+          </Select>
+        </FormItem>
         <FormItem label="用户昵称" prop="name">
           <Input prefix="md-person" v-model="localItem.name" placeholder="请输入用户昵称"></Input>
         </FormItem>
@@ -101,6 +110,10 @@ export default {
     item: {
       type: Object,
       default: () => {}
+    },
+    roles: {
+      type: Array,
+      default: () => []
     }
   },
   watch: {
@@ -120,6 +133,7 @@ export default {
         name: '',
         username: '',
         password: '',
+        roles: ['user'],
         status: '0',
         favs: 100,
         gender: '',
@@ -149,6 +163,7 @@ export default {
           { type: 'email', message: '请检查邮箱格式', trigger: 'blur' },
           { validator: userNamePassCheck, trigger: 'blur' }
         ],
+        roles: [{ required: true, message: '请选择用户角色', trigger: 'blur' }],
         password: [
           { required: true, message: '请输入密码', trigger: 'blur' },
           {

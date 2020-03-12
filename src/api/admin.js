@@ -30,6 +30,8 @@ const addRole = (data) => axios.post('/admin/add-role', data)
 
 const getRoles = () => axios.get('/admin/get-roles')
 
+const getRoleNames = () => axios.get('/admin/get-roles-names')
+
 const updateRole = (data) => axios.post('/admin/update-role', data)
 
 const deleteRole = (data) => axios.post('/admin/delete-role', data)
@@ -48,5 +50,6 @@ export {
   addRole,
   getRoles,
   updateRole,
-  deleteRole
+  deleteRole,
+  getRoleNames
 }
