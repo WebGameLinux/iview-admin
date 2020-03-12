@@ -177,7 +177,6 @@ export default {
     }
   },
   mounted () {
-    window.vue = this
     this._getMenu()
     this._getRoles()
   },
@@ -279,17 +278,27 @@ export default {
           // 检验通过后的逻辑
           // 1. 获取表单的信息
           if (this.modelEdit) {
-            // editIndex
-            this.roles.splice(this.editIndex, 1, { ...this.formItem })
-          } else {
-            this.roles.push({ ...this.formItem })
-          }
-          // 2. 发送创建角色的请求
-          addRole(this.formItem).then((res) => {
-            if (res.code === 200 && res.data.name !== '') {
-              this.$Message.success('添加成功！')
+            const roleData = {
+              _id: this.roles[this.editIndex]._id,
+              ...this.formItem
             }
-          })
+            // editIndex
+            updateRole(roleData).then((res) => {
+              if (res.code === 200 && res.data.nModified === 1) {
+                this.roles.splice(this.editIndex, 1, roleData)
+              }
+              this.$Message.success('更新成功！')
+            })
+          } else {
+            // 2. 发送创建角色的请求
+            addRole(this.formItem).then((res) => {
+              if (res.code === 200 && res.data.name !== '') {
+                this.roles.push(res.data)
+                this.$Message.success('添加成功！')
+              }
+            })
+          }
+
           // 3. 清空表单信息
           this.initForm()
         } else {
