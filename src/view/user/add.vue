@@ -101,6 +101,14 @@ const mobileCheck = (rule, value, callback) => {
   }
 }
 
+const rolesCheck = (rule, value, callback) => {
+  if (value.length === 0) {
+    callback(new Error('请选择用户角色!'))
+  } else {
+    callback()
+  }
+}
+
 export default {
   props: {
     isShow: {
@@ -163,7 +171,7 @@ export default {
           { type: 'email', message: '请检查邮箱格式', trigger: 'blur' },
           { validator: userNamePassCheck, trigger: 'blur' }
         ],
-        roles: [{ required: true, message: '请选择用户角色', trigger: 'blur' }],
+        roles: [{ validator: rolesCheck, trigger: 'blur' }],
         password: [
           { required: true, message: '请输入密码', trigger: 'blur' },
           {

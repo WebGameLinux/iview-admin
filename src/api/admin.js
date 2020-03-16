@@ -36,6 +36,8 @@ const updateRole = (data) => axios.post('/admin/update-role', data)
 
 const deleteRole = (data) => axios.post('/admin/delete-role', data)
 
+const getStatData = () => axios.get('/admin/getstat')
+
 export {
   getUserList,
   updateUserById,
@@ -51,5 +53,6 @@ export {
   getRoles,
   updateRole,
   deleteRole,
-  getRoleNames
+  getRoleNames,
+  getStatData
 }
