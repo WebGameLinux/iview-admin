@@ -38,6 +38,11 @@ const deleteRole = (data) => axios.post('/admin/delete-role', data)
 
 const getStatData = () => axios.get('/admin/getstat')
 
+const getErrorList = (params) =>
+  axios.get('/admin/get-error?' + qs.stringify(params))
+
+const deleteErrors = (data) => axios.post('/admin/delete-error', data)
+
 export {
   getUserList,
   updateUserById,
@@ -54,5 +59,7 @@ export {
   updateRole,
   deleteRole,
   getRoleNames,
-  getStatData
+  getStatData,
+  getErrorList,
+  deleteErrors
 }
