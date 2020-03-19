@@ -206,7 +206,7 @@ export default {
         if (this.roles[this.roleIndex].menu.length === 0) {
           modifyNode(this.menuData, null, 'checked', false)
           this.tableData = []
-          this.roleIndex = ''
+          // this.roleIndex = ''
           return
         }
         // 修改右侧菜单树 + 权限列表的选中状态

@@ -82,14 +82,16 @@ export default {
         })
           .then((res) => {
             // console.log('TCL: handleLogin -> res', res)
-            const data = res.data
-            commit('setToken', res.token)
-            commit('setAvatar', data.pic)
-            commit('setUserName', data.name)
-            commit('setUserId', data._id)
-            commit('setAccess', data.roles)
-            commit('setHasGetInfo', true)
-            resolve(true)
+            if (res.code === 200) {
+              const data = res.data
+              commit('setToken', res.token)
+              commit('setAvatar', data.pic)
+              commit('setUserName', data.name)
+              commit('setUserId', data._id)
+              commit('setAccess', data.roles)
+              commit('setHasGetInfo', true)
+            }
+            resolve(res)
           })
           .catch((err) => {
             reject(err)
