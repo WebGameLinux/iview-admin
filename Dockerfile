@@ -1,5 +1,5 @@
 # build stage
-FROM node:12-apline as build-stage
+FROM node:12-alpine as build-stage
 
 LABEL maintainer=brian@toimc.com
 
