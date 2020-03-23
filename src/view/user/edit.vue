@@ -83,6 +83,14 @@ const userNamePassCheck = (rule, value, callback, vm) => {
   })
 }
 
+const rolesCheck = (rule, value, callback) => {
+  if (value.length === 0) {
+    callback(new Error('请选择用户角色!'))
+  } else {
+    callback()
+  }
+}
+
 export default {
   props: {
     isShow: {
@@ -147,7 +155,7 @@ export default {
             trigger: 'blur'
           }
         ],
-        roles: [{ required: true, message: '请选择用户角色', trigger: 'blur' }],
+        roles: [{ validator: rolesCheck, trigger: 'blur' }],
         password: [
           // { required: true, message: '请输入密码', trigger: 'blur' },
           {
