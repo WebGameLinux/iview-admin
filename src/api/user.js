@@ -1,4 +1,4 @@
-import axios from '@/libs/request'
+import { axios } from '@/libs/request'
 import { getToken } from '../libs/util'
 
 const getUserInfo = () => {

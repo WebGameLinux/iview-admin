@@ -64,7 +64,7 @@
   </div>
 </template>
 <script>
-import { checkUsername } from '@/api/admin'
+import { userDispatch } from '@/api/admin'
 const favPassCheck = (rule, value, callback) => {
   if (!value) {
     return callback(new Error('请输入用户积分'))
@@ -80,7 +80,7 @@ const favPassCheck = (rule, value, callback) => {
   }
 }
 const userNamePassCheck = (rule, value, callback) => {
-  checkUsername(value).then((res) => {
+  userDispatch.use('check', value).then((res) => {
     if (res.code === 200) {
       const data = res.data
       if (data === 1) {

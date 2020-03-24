@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import { deleteErrors, getErrorList } from '@/api/admin'
+import { errorDispatch } from '@/api/admin'
 import Expand from './expand.vue'
 import More from './more.vue'
 import dayjs from 'dayjs'
@@ -132,7 +132,6 @@ export default {
   },
   watch: {
     filters (newval, oldval) {
-      console.log('filters -> newval', newval)
       this._getErrorList()
     }
   },
@@ -147,7 +146,7 @@ export default {
             const arr = selection.reduce((obj, item) => {
               return [...obj, item._id]
             }, [])
-            deleteErrors({ ids: arr }).then((res) => {
+            errorDispatch.use('delete', { ids: arr }).then((res) => {
               if (res.code === 200) {
                 this.data = this.data.filter((item) => {
                   if (!arr.includes(item._id)) {
@@ -178,23 +177,25 @@ export default {
       this.filters = obj
     },
     _getErrorList () {
-      getErrorList({
-        page: this.page,
-        limit: this.limit,
-        filter: this.filters || {}
-      }).then((res) => {
-        this.data = res.data
-        this.total = res.total
-        this.loading = false
-        const keys = Object.keys(res.filters)
-        this.columns.map((item) => {
-          if (keys.includes(item.key)) {
-            if (item.filters.length === 0) {
-              item.filters = res.filters[item.key]
-            }
-          }
+      errorDispatch
+        .use('get', {
+          page: this.page,
+          limit: this.limit,
+          filter: this.filters || {}
         })
-      })
+        .then((res) => {
+          this.data = res.data
+          this.total = res.total
+          this.loading = false
+          const keys = Object.keys(res.filters)
+          this.columns.map((item) => {
+            if (keys.includes(item.key)) {
+              if (item.filters.length === 0) {
+                item.filters = res.filters[item.key]
+              }
+            }
+          })
+        })
     },
     onPageChange (num) {
       // 页码

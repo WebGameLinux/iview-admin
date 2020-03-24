@@ -1,4 +1,4 @@
-import axios from '@/libs/request'
+import { axios } from '@/libs/request'
 
 /**
  * 获取验证码接口
