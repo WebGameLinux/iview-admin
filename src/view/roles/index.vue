@@ -201,6 +201,7 @@ export default {
       this.showAdd = true
     },
     selectRole (value) {
+      debugger
       if (this.roleIndex === '' || this.roleIndex !== value) {
         this.roleIndex = value
         if (this.roles[this.roleIndex].menu.length === 0) {
