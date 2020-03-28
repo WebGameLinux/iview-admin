@@ -26,7 +26,7 @@
                   type="md-trash"
                   size="16"
                   color="#ed4014"
-                  @click.stop="_roleDispatch.use('delete',item,index)"
+                  @click.stop="_deleteRole(item,index)"
                 ></Icon>
               </span>
             </li>
@@ -191,7 +191,7 @@ export default {
       })
     },
     _getRoles () {
-      roleDispatch.use('roles').then((res) => {
+      roleDispatch.use('get').then((res) => {
         if (res.code === 200) {
           this.roles = res.data
         }
@@ -201,6 +201,7 @@ export default {
       this.showAdd = true
     },
     selectRole (value) {
+      debugger
       if (this.roleIndex === '' || this.roleIndex !== value) {
         this.roleIndex = value
         if (this.roles[this.roleIndex].menu.length === 0) {
@@ -295,7 +296,7 @@ export default {
             })
           } else {
             // 2. 发送创建角色的请求
-            roleDispatch.use('get', this.formItem).then((res) => {
+            roleDispatch.use('add', this.formItem).then((res) => {
               if (res.code === 200 && res.data.name !== '') {
                 this.roles.push(res.data)
                 this.$Message.success('添加成功！')

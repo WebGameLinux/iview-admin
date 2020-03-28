@@ -309,6 +309,8 @@ export default {
         if (res.code === 200) {
           // this.tableData[this.currentIndex] = item
           this.tableData.splice(this.currentIndex, 1, item)
+        } else {
+          this.$Message.error(res.msg)
         }
       })
       this.showEdit = false
