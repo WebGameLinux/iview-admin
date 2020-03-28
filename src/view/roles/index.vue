@@ -178,6 +178,8 @@ export default {
     }
   },
   mounted () {
+    debugger
+    window.vue = this
     this._getMenu()
     this._getRoles()
   },
