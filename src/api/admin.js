@@ -22,7 +22,7 @@ export const userDispatch = new Dispatch({
 // const updateMenu = (data) => axios.post('/admin/update-menu', data)
 // const deleteMenu = (data) => axios.post('/admin/delete-menu', data)
 export const menuDispatch = new Dispatch({
-  add: ['/admin/add-user', 'post'],
+  add: ['/admin/add-menu', 'post'],
   get: ['/admin/get-menu', 'get'],
   update: ['/admin/update-menu', 'post'],
   delete: ['/admin/delete-menu', 'post']
