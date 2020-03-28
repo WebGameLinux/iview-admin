@@ -1,4 +1,4 @@
-import axios from '@/libs/request'
+import { axios } from '@/libs/request'
 import qs from 'qs'
 
 // 内容管理 -> 文章管理

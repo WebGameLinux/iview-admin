@@ -1,8 +1,8 @@
 <template>
   <div>
     <Row type="flex" align="middle">
-      <i-col class="overtext" span="18">{{row.content}}</i-col>
-      <i-col span="6">
+      <i-col class="overtext" span="18" ref="content">{{row.content}}</i-col>
+      <i-col span="6" v-show="show">
         <a @click="more()" style="padding-left:6px;">更多>></a>
       </i-col>
     </Row>
@@ -17,6 +17,23 @@ export default {
       default: () => {}
     }
   },
+  watch: {
+    row (newval, oldval) {
+      this.$nextTick(() => {
+        const elem = this.$refs.content.$el
+        if (elem.clientHeight > 42) {
+          this.show = true
+        } else {
+          this.show = false
+        }
+      })
+    }
+  },
+  data () {
+    return {
+      show: false
+    }
+  },
   methods: {
     more () {
       this.$Modal.info({
@@ -27,7 +44,7 @@ export default {
             props: {
               // disabled: true,
               type: 'textarea',
-              value: JSON.stringify(this.row.param, null, 2),
+              value: JSON.stringify(this.row.content, null, 2),
               rows: 16
             }
           })

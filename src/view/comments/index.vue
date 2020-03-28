@@ -11,22 +11,13 @@
         @on-row-remove="handleRowRemove"
         @on-selection-change="handleSelect"
         @searchEvent="handleSearch"
-      >
-        <template v-slot:table-header>
-          <Button @click="handleAddUser" class="search-btn" type="primary">
-            <Icon type="md-person-add" />&nbsp;&nbsp;新增用户
-          </Button>
-        </template>
-      </tables>
+      ></tables>
       <Row type="flex" justify="space-between" align="middle">
-        <Col class="ctrls">
+        <i-col class="ctrls">
           <Button @click="handleDeleteBatch()">批量删除</Button>
           <Button @click="handleSetBatch()">批量设置</Button>
-          <Button style="margin: 10px 0;" type="primary" @click="exportExcel">
-            <Icon type="md-download"></Icon>导出表格
-          </Button>
-        </Col>
-        <Col>
+        </i-col>
+        <i-col>
           <Page
             :total="total"
             :current="page"
@@ -38,25 +29,12 @@
             @on-change="onPageChange"
             @on-page-size-change="onPageSizeChange"
           />
-        </Col>
+        </i-col>
       </Row>
     </Card>
-    <EditModel
-      :isShow="showEdit"
-      :item="currentItem"
-      :roles="roles"
-      @editEvent="handleItemEdit"
-      @changeEvent="handleChangeEvent"
-    ></EditModel>
-    <AddModel
-      :isShow="showAdd"
-      :roles="roles"
-      @editEvent="handleItemAdd"
-      @changeEvent="handleAddChangeEvent"
-    ></AddModel>
     <BatchSet
       :isShow="showSet"
-      :roles="roles"
+      :users="users"
       @editEvent="handleItemSet"
       @changeEvent="handleSetChangeEvent"
     ></BatchSet>
@@ -64,18 +42,16 @@
 </template>
 
 <script>
-import { userDispatch, roleDispatch } from '@/api/admin'
+import { commentsDispatch } from '@/api/admin'
 import Tables from '_c/tables'
-import EditModel from './edit'
-import AddModel from './add'
 import BatchSet from './batchSet'
+import Expand from './expand.vue'
+import More from './more.vue'
 import dayjs from 'dayjs'
 export default {
   name: 'menu_management', // => 等价于notCache
   components: {
     Tables,
-    EditModel,
-    AddModel,
     BatchSet
   },
   data () {
@@ -84,13 +60,23 @@ export default {
       limit: 10,
       total: 0,
       option: {},
-      roles: [],
-      showEdit: false,
-      showAdd: false,
       showSet: false,
       currentIndex: 0,
       currentItem: {},
       columns: [
+        {
+          type: 'expand',
+          key: 'stack',
+          width: 50,
+          render: (h, params) => {
+            return h(Expand, {
+              props: {
+                row: params.row
+              }
+            })
+          },
+          hidden: true
+        },
         {
           type: 'selection',
           width: 60,
@@ -98,65 +84,78 @@ export default {
           hidden: true
         },
         {
-          title: '用户昵称',
-          key: 'name',
-          minWidth: 140,
-          search: {
-            type: 'input'
-          }
-        },
-        {
-          title: '登录名',
-          key: 'username',
+          title: '文章标题',
+          key: 'tid',
           minWidth: 160,
           search: {
             type: 'input'
-          }
-        },
-        {
-          title: '角色',
-          key: 'roles',
-          align: 'center',
-          minWidth: 160,
-          render: (h, params) => {
-            const roleNames = params.row.roles
-              .map((o) => this.roleNames[o])
-              .join(',')
-            return h('div', [h('span', roleNames)])
           },
-          search: {
-            type: 'select',
-            options: [
-              {
-                key: '超级管理员',
-                value: 'super_admin'
-              },
-              {
-                key: '管理员',
-                value: 'admin'
-              },
-              {
-                key: '普通用户',
-                value: 'user'
-              }
-            ]
+          render: (h, params) => {
+            const name = params.row.tid
+              ? params.row.tid.title
+              : '无标题，请核查！'
+            return h('div', name)
           }
         },
         {
-          title: '积分',
-          key: 'favs',
+          title: '文章作者',
+          key: 'uid',
           align: 'center',
-          hidden: true,
-          minWidth: 80
+          minWidth: 120,
+          search: {
+            type: 'input'
+          },
+          render: (h, params) => {
+            const name = params.row.uid
+              ? params.row.uid.name
+              : '无用户昵称，请核查！'
+            return h('div', name)
+          }
         },
         {
-          title: '是否禁用',
+          title: '评论用户',
+          key: 'cuid',
+          align: 'center',
+          minWidth: 120,
+          search: {
+            type: 'input'
+          },
+          render: (h, params) => {
+            const name = params.row.cuid
+              ? params.row.cuid.name
+              : '无评论用户昵称，请核查！'
+            return h('div', name)
+          }
+        },
+        {
+          title: '回复内容',
+          key: 'content',
+          minWidth: 240,
+          search: {
+            type: 'input'
+          },
+          render: (h, params) => {
+            return h(More, {
+              props: {
+                row: params.row
+              }
+            })
+          }
+        },
+        {
+          title: '是否显示',
           key: 'status',
           align: 'center',
           minWidth: 100,
           render: (h, params) => {
             return h('div', [
-              h('span', params.row.status === '0' ? '否' : '是')
+              h('Icon', {
+                props: {
+                  color: params.row.status === '1' ? '#19be6b' : '#ed4014',
+                  type: params.row.status === '1' ? 'md-checkmark' : 'md-close',
+                  size: 20
+                }
+              })
             ])
           },
           search: {
@@ -178,12 +177,20 @@ export default {
           }
         },
         {
-          title: '是否是VIP',
-          key: 'isVip',
+          title: '是否采纳',
+          key: 'isBest',
           align: 'center',
-          minWidth: 120,
+          minWidth: 100,
           render: (h, params) => {
-            return h('div', [h('span', params.row.isVip === '0' ? '否' : '是')])
+            return h('div', [
+              h('Icon', {
+                props: {
+                  color: '#19be6b',
+                  type: params.row.isBest === '1' ? 'md-checkmark' : '',
+                  size: 20
+                }
+              })
+            ])
           },
           search: {
             type: 'radio',
@@ -224,7 +231,8 @@ export default {
           hidden: true,
           fixed: 'right',
           width: 100,
-          align: 'center'
+          align: 'center',
+          options: ['delete']
         }
       ],
       pageArr: [10, 20, 30, 50, 100],
@@ -233,17 +241,19 @@ export default {
     }
   },
   computed: {
-    roleNames () {
-      const tmp = {}
-      this.roles.forEach((item) => {
-        tmp[item.role] = item.name
-      })
-      return tmp
+    users () {
+      const arr = this.selection.reduce((obj, item) => {
+        return {
+          ...obj,
+          [item.cuid._id]: item.cuid.name
+        }
+      }, {})
+      return arr
     }
   },
   mounted () {
+    this.option = { item: 'status', search: '1' }
     this._getList()
-    this._getRoleNames()
   },
   methods: {
     handleDeleteBatch () {
@@ -252,15 +262,17 @@ export default {
         this.$Message.info('请选择需要删除的数据！')
         return
       }
-      const msg = this.selection.map((o) => o.username).join(',')
+      const msg = this.selection.map((o) => o.content).join(',')
       this.$Modal.confirm({
-        title: '确定删除用户吗？',
-        content: `删除${msg}的用户`,
+        title: '确定删除吗？',
+        content: `删除${msg}的评论`,
         onOk: () => {
           const arr = this.selection.map((o) => o._id)
-          userDispatch.use('delete', arr).then((res) => {
+          commentsDispatch.use('delete', { ids: arr }).then((res) => {
             // this.tableData.splice(index, 1)
-            this.tableData.filter((item) => !arr.includes(item._id))
+            this.tableData = this.tableData.filter(
+              (item) => !arr.includes(item._id)
+            )
             this.$Message.success('删除成功！')
             //  this._getList()
           })
@@ -282,57 +294,59 @@ export default {
     handleSelect (selection) {
       this.selection = selection
     },
-    handleAddUser () {
-      this.showAdd = true
-    },
-    handleChangeEvent (value) {
-      this.showEdit = value
-    },
-    handleAddChangeEvent (value) {
-      this.showAdd = value
-    },
     handleSetChangeEvent (value) {
       this.showSet = value
     },
-    // 添加模态框
-    handleItemAdd (item) {
-      userDispatch.use('add', item).then((res) => {
-        if (res.code === 200) {
-          // this.tableData[this.currentIndex] = item
-          this.tableData.splice(0, 0, res.data)
-        }
-      })
-    },
-    // 编辑模态框
-    handleItemEdit (item) {
-      userDispatch.use('update', item).then((res) => {
-        if (res.code === 200) {
-          // this.tableData[this.currentIndex] = item
-          this.tableData.splice(this.currentIndex, 1, item)
-        }
-      })
-      this.showEdit = false
-    },
     // 批量设置模态框
     handleItemSet (settings) {
-      const msg = this.selection.map((o) => o.username).join(',')
+      const num = this.selection.length
+      let msg = `设置${num}评论吗？`
+      if (settings.forbit === '1' && settings.users.length > 0) {
+        const users = []
+        settings.users.forEach((item) => {
+          users.push(this.users[item])
+        })
+        msg = `确定设置${users.join(',')}用户禁止发言吗？`
+      }
+      // const msg = this.selection.map((o) => o.cuid.name).join(',')
       this.$Modal.confirm({
-        title: '确定修改用户吗？',
-        content: `修改${msg}的用户`,
+        title: '确定修改？',
+        content: msg,
         onOk: () => {
+          debugger
           const arr = this.selection.map((o) => o._id)
-          userDispatch.use('batch', { ids: arr, settings }).then((res) => {
-            // this.tableData.splice(index, 1)
-            this.tableData.map((item) => {
-              if (arr.includes(item._id)) {
-                for (var keys of Object.keys(settings)) {
-                  item[keys] = settings[keys]
-                }
-              }
-            })
-            this.$Message.success('批量设置成功！')
-            //  this._getList()
-          })
+          if (settings.forbit !== '1') {
+            delete settings.users
+            commentsDispatch
+              .use('batch', { ids: arr, settings })
+              .then((res) => {
+                // this.tableData.splice(index, 1)
+                this.tableData.map((item) => {
+                  if (arr.includes(item._id)) {
+                    for (var keys of Object.keys(settings)) {
+                      item[keys] = settings[keys]
+                    }
+                  }
+                })
+                this.$Message.success('批量设置成功！')
+                //  this._getList()
+              })
+          } else {
+            userDispatch
+              .use('batch', { ids: arr, settings: { status: '1' } })
+              .then((res) => {
+                // this.tableData.splice(index, 1)
+                this.tableData = this.tableData.map((item) => {
+                  if (arr.includes(item._id)) {
+                    for (var keys of Object.keys(settings)) {
+                      item[keys] = settings[keys]
+                    }
+                  }
+                })
+                this.$Message.success('批量设置成功！')
+                //  this._getList()
+              })
+          }
         },
         onCancel: () => {
           this.$Message.info('取消操作！')
@@ -340,7 +354,6 @@ export default {
       })
     },
     handleRowEdit (row, index) {
-      this.showEdit = true
       this.currentIndex = index
       this.currentItem = { ...row }
     },
@@ -369,6 +382,11 @@ export default {
         this.page = 1 // 从1开始
       }
       this.option = value
+      // if (value.search === '') {
+      //   this.option = {}
+      // } else {
+      //   this.option[value.item] = value.search
+      // }
       this._getList()
     },
     onPageChange (page) {
@@ -379,29 +397,17 @@ export default {
       this.limit = size
       this._getList()
     },
-    exportExcel () {
-      this.$refs.tables.exportCsv({
-        filename: `table-${new Date().valueOf()}.csv`
-      })
-    },
     _getList () {
-      userDispatch
+      commentsDispatch
         .use('get', {
           page: this.page - 1,
           limit: this.limit,
-          option: this.option
+          options: this.option
         })
         .then((res) => {
           this.tableData = res.data
           this.total = res.total
         })
-    },
-    _getRoleNames () {
-      roleDispatch.use('roles').then((res) => {
-        if (res.code === 200) {
-          this.roles = res.data
-        }
-      })
     }
   }
 }
@@ -410,6 +416,7 @@ export default {
 <style lang="scss" scoped>
 .ctrls {
   button {
+    margin-top: 10px;
     margin-right: 10px;
   }
 }

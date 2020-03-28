@@ -26,7 +26,7 @@
                   type="md-trash"
                   size="16"
                   color="#ed4014"
-                  @click.stop="_deleteRole(item,index)"
+                  @click.stop="_roleDispatch.use('delete',item,index)"
                 ></Icon>
               </span>
             </li>
@@ -84,7 +84,7 @@
 
 <script>
 import OperationsTable from './operations.vue'
-import { getMenu, getRoles, addRole, updateRole, deleteRole } from '@/api/admin'
+import { menuDispatch, roleDispatch } from '@/api/admin'
 import { modifyNode, getPropertyIds } from '@/libs/util'
 export default {
   name: 'roles_management',
@@ -183,7 +183,7 @@ export default {
   },
   methods: {
     _getMenu () {
-      getMenu().then((res) => {
+      menuDispatch.use('get').then((res) => {
         if (res.code === 200) {
           this.menuData = res.data
           localStorage.setItem('menuData', JSON.stringify(this.menuData))
@@ -191,7 +191,7 @@ export default {
       })
     },
     _getRoles () {
-      getRoles().then((res) => {
+      roleDispatch.use('roles').then((res) => {
         if (res.code === 200) {
           this.roles = res.data
         }
@@ -242,7 +242,7 @@ export default {
         content: `确定删除${item.name}的角色吗？`,
         onOk: () => {
           this.roles.splice(index, 1)
-          deleteRole({ _id: item._id }).then((res) => {
+          roleDispatch.use('delete', { _id: item._id }).then((res) => {
             if (res.code === 200 && res.data.deletedCount === 1) {
               this.$Message.success('成功删除！')
             }
@@ -261,7 +261,7 @@ export default {
       const tmp = { ...this.roles[this.roleIndex] }
       tmp.menu = menus
       this.roles.splice(this.roleIndex, 1, tmp)
-      updateRole(tmp).then((res) => {
+      roleDispatch.use('update', tmp).then((res) => {
         if (res.code === 200 && res.data.nModified === 1) {
           this.$Message.success('更新角色权限成功！')
         }
@@ -287,7 +287,7 @@ export default {
               ...this.formItem
             }
             // editIndex
-            updateRole(roleData).then((res) => {
+            roleDispatch.use('update', roleData).then((res) => {
               if (res.code === 200 && res.data.nModified === 1) {
                 this.roles.splice(this.editIndex, 1, roleData)
               }
@@ -295,7 +295,7 @@ export default {
             })
           } else {
             // 2. 发送创建角色的请求
-            addRole(this.formItem).then((res) => {
+            roleDispatch.use('get', this.formItem).then((res) => {
               if (res.code === 200 && res.data.name !== '') {
                 this.roles.push(res.data)
                 this.$Message.success('添加成功！')
