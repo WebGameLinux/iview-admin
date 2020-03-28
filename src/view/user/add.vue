@@ -80,7 +80,7 @@ const favPassCheck = (rule, value, callback) => {
   }
 }
 const userNamePassCheck = (rule, value, callback) => {
-  userDispatch.use('check', value).then((res) => {
+  userDispatch.use('check', { username: value }).then((res) => {
     if (res.code === 200) {
       const data = res.data
       if (data === 1) {

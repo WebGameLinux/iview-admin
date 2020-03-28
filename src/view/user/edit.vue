@@ -3,13 +3,13 @@
     <Modal v-model="showStatus" title="编辑用户信息" @on-ok="ok" @on-cancel="cancel" :loading="loading">
       <Form :model="localItem" :label-width="80" :rules="ruleValidate" ref="table">
         <FormItem label="用户昵称" prop="name">
-          <Input v-model="localItem.name" placeholder="请输入用户昵称"></Input>
+          <i-input v-model="localItem.name" placeholder="请输入用户昵称"></i-input>
         </FormItem>
         <FormItem label="登录名" prop="username">
-          <Input v-model="localItem.username" placeholder="请输入登录名"></Input>
+          <i-input v-model="localItem.username" placeholder="请输入登录名"></i-input>
         </FormItem>
         <FormItem label="密码" prop="password">
-          <Input v-model="localItem.password" placeholder="请输入密码"></Input>
+          <i-input type="password" v-model="localItem.password" placeholder="请输入密码"></i-input>
         </FormItem>
         <FormItem label="角色" prop="roles">
           <Select v-model="localItem.roles" multiple>
@@ -33,7 +33,7 @@
           </RadioGroup>
         </FormItem>
         <FormItem label="用户积分" prop="favs">
-          <Input v-model="localItem.favs" style="width: 120px;"></Input>
+          <i-input v-model="localItem.favs" style="width: 120px;"></i-input>
         </FormItem>
         <!-- <FormItem label="标签">
           <Select v-model="formatTags" multiple>
@@ -69,7 +69,7 @@ const userNamePassCheck = (rule, value, callback, vm) => {
     callback()
     return
   }
-  userDispatch.use('check', value).then((res) => {
+  userDispatch.use('check', { username: value }).then((res) => {
     if (res.code === 200) {
       const data = res.data
       if (data === 1) {
