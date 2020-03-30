@@ -10,11 +10,11 @@ import Dispatch from '../libs/dispatch'
 // const addUser = (data) => axios.post('/admin/add-user', data)
 export const userDispatch = new Dispatch({
   get: ['/admin/users', 'get'],
-  update: ['/admin/update-user', 'post'],
-  batch: ['/admin/update-user-settings', 'post'],
-  delete: ['/admin/delete-user', 'post'],
+  update: ['/admin/updateUser', 'post'],
+  batch: ['/admin/updateUserSettings', 'post'],
+  delete: ['/admin/deleteUser', 'post'],
   check: ['/admin/checkname', 'get'],
-  add: ['/admin/add-user', 'post']
+  add: ['/admin/addUser', 'post']
 })
 
 // const addMenu = (data) => axios.post('/admin/add-menu', data)
@@ -22,10 +22,10 @@ export const userDispatch = new Dispatch({
 // const updateMenu = (data) => axios.post('/admin/update-menu', data)
 // const deleteMenu = (data) => axios.post('/admin/delete-menu', data)
 export const menuDispatch = new Dispatch({
-  add: ['/admin/add-menu', 'post'],
-  get: ['/admin/get-menu', 'get'],
-  update: ['/admin/update-menu', 'post'],
-  delete: ['/admin/delete-menu', 'post']
+  add: ['/admin/addMenu', 'post'],
+  get: ['/admin/getMenu', 'get'],
+  update: ['/admin/updateMenu', 'post'],
+  delete: ['/admin/deleteMenu', 'post']
 })
 
 // const addRole = (data) => axios.post('/admin/add-role', data)
@@ -34,27 +34,27 @@ export const menuDispatch = new Dispatch({
 // const updateRole = (data) => axios.post('/admin/update-role', data)
 // const deleteRole = (data) => axios.post('/admin/delete-role', data)
 export const roleDispatch = new Dispatch({
-  add: ['/admin/add-role', 'post'],
-  get: ['/admin/get-roles', 'get'],
-  roles: ['/admin/get-roles-names', 'get'],
-  update: ['/admin/update-role', 'post'],
-  delete: ['/admin/delete-role', 'post']
+  add: ['/admin/addRole', 'post'],
+  get: ['/admin/getRoles', 'get'],
+  roles: ['/admin/getRolesNames', 'get'],
+  update: ['/admin/updateRole', 'post'],
+  delete: ['/admin/deleteRole', 'post']
 })
 
 // const getErrorList = (params) =>
 //   axios.get('/admin/get-error?' + qs.stringify(params))
 // const deleteErrors = (data) => axios.post('/admin/delete-error', data)
 export const errorDispatch = new Dispatch({
-  get: ['/admin/get-error', 'get'],
-  delete: ['/admin/delete-error', 'post']
+  get: ['/admin/getError', 'get'],
+  delete: ['/admin/deleteError', 'post']
 })
 
 // 封装一层，更加简练
 export const commentsDispatch = new Dispatch({
-  get: ['/admin/get-comments', 'get'],
-  update: ['/admin/update-comments', 'post'],
-  batch: ['/admin/update-comments-batch', 'post'],
-  delete: ['/admin/delete-comments', 'post']
+  get: ['/admin/getComments', 'get'],
+  // update: ['/admin/updateComments', 'post'],
+  batch: ['/admin/updateCommentsBatch', 'post'],
+  delete: ['/admin/deleteComments', 'post']
 })
 
 export const getStatData = () => axios.get('/admin/getstat')
