@@ -11,28 +11,28 @@ const deletePostById = (ids) => {
 }
 
 const updatePostById = (data) => {
-  return axios.post('/content/update-id', data)
+  return axios.post('/content/updateId', data)
 }
 
 const updatePostBatchById = (data) => {
-  return axios.post('/content/update-post-settings', data)
+  return axios.post('/content/updatePostSettings', data)
 }
 
 // 内容管理 -> 标签管理
 const getTags = (options) => {
-  return axios.get('/admin/get-tags?' + qs.stringify(options))
+  return axios.get('/admin/getTags?' + qs.stringify(options))
 }
 
 const addTag = (data) => {
-  return axios.post('/admin/add-tag', data)
+  return axios.post('/admin/addTag', data)
 }
 
 const removeTag = (id) => {
-  return axios.get('/admin/remove-tag?ptid=' + id)
+  return axios.get('/admin/removeTag?ptid=' + id)
 }
 
 const updateTag = (data) => {
-  return axios.post('/admin/edit-tag?', data)
+  return axios.post('/admin/editTag?', data)
 }
 
 export {

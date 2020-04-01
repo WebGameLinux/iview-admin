@@ -388,15 +388,16 @@ export default {
       })
     },
     handleSearch (value) {
-      console.log('handleSearch -> value', value)
       // 判断是否有新的查询内容的传递，把分页数据归0
-      if (
-        (typeof this.option.search !== 'undefined' &&
-          value.search !== this.option.search) ||
-        this.option === {}
-      ) {
-        this.page = 1 // 从1开始
-      }
+      this.option = {}
+      this.page = 1
+      // if (
+      //   (typeof this.option.search !== 'undefined' &&
+      //     value.search !== this.option.search) ||
+      //   this.option === {}
+      // ) {
+      //   this.page = 1 // 从1开始
+      // }
       if (value.item === 'tags') {
         value.item = 'tag'
       }
