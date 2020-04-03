@@ -210,7 +210,7 @@ export default {
           minWidth: 180,
           render: (h, params) => {
             return h('div', [
-              h('span', dayjs(params.row.created).format('YYYY-MM-DD hh:mm:ss'))
+              h('span', dayjs(params.row.created).format('YYYY-MM-DD HH:mm:ss'))
             ])
           },
           search: {

@@ -97,7 +97,7 @@ export default {
           // 方法二：使用 render 方法结构化数据
           render: (h, params) => {
             return h('div', [
-              h('span', dayjs(params.row.created).format('YYYY-MM-DD hh:mm:ss'))
+              h('span', dayjs(params.row.created).format('YYYY-MM-DD HH:mm:ss'))
             ])
           },
           search: {
