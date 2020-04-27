@@ -80,8 +80,8 @@ export default {
     return {
       svg: '',
       form: {
-        username: '',
-        password: '',
+        username: 'toimc_admin@toimc.com',
+        password: 'toimc@520',
         code: '',
         sid: ''
       }
