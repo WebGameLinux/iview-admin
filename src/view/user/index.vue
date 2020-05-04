@@ -258,7 +258,7 @@ export default {
         content: `删除${msg}的用户`,
         onOk: () => {
           const arr = this.selection.map((o) => o._id)
-          userDispatch.use('delete', arr).then((res) => {
+          userDispatch.use('delete', { ids: arr }).then((res) => {
             // this.tableData.splice(index, 1)
             this.tableData.filter((item) => !arr.includes(item._id))
             this.$Message.success('删除成功！')
@@ -351,7 +351,7 @@ export default {
         title: '确定删除用户吗？',
         content: `删除${row.name}的用户`,
         onOk: () => {
-          userDispatch.use('delete', row._id).then((res) => {
+          userDispatch.use('delete', { ids: [row._id] }).then((res) => {
             this.tableData.splice(index, 1)
             this.$Message.success('删除成功！')
           })
