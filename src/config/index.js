@@ -2,7 +2,7 @@ export default {
   /**
    * @description 配置显示在浏览器标签的title
    */
-  title: '后台管理系统',
+  title: '命星管理后台',
   /**
    * @description token在Cookie中存储的天数，默认1天
    */
@@ -17,8 +17,8 @@ export default {
    * @description api请求基础路径
    */
   baseUrl: {
-    dev: 'http://localhost:3000',
-    pro: 'http://api.dev.toimc.com:22000'
+    dev: 'http://localhost:8081',
+    pro: 'http://travelapp.word-server.com'
   },
   /**
    * @description 默认打开的首页的路由name值，默认为home

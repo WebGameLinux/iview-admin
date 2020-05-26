@@ -9,7 +9,8 @@ module.exports = {
     'vue/no-parsing-error': [2, { 'x-invalid-end-tag': false }],
     'no-undef': 'off',
     camelcase: 'off',
-    'vue/html-self-closing': 'off'
+    'vue/html-self-closing': 'off',
+    'no-tabs': 'off'
   },
   parserOptions: {
     parser: 'babel-eslint'

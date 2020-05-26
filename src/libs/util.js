@@ -9,7 +9,7 @@ const { title, cookieExpires, useI18n } = config
 
 dayjs.extend(relativeTime)
 
-export const TOKEN_KEY = 'token'
+export const TOKEN_KEY = 'authentication'
 
 export const setToken = (token) => {
   Cookies.set(TOKEN_KEY, token, { expires: cookieExpires || 1 })
@@ -58,16 +58,16 @@ export const getMenuByRouter = (list, access) => {
 }
 
 /**
- * @param {Array} routeMetched 当前路由metched
+ * @param {Array} routeMatched 当前路由matched
  * @returns {Array}
  */
 export const getBreadCrumbList = (route, homeRoute) => {
   const homeItem = { ...homeRoute, icon: homeRoute.meta.icon }
-  const routeMetched = route.matched
-  if (routeMetched.some((item) => item.name === homeRoute.name)) {
+  const routeMatched = route.matched
+  if (routeMatched.some((item) => item.name === homeRoute.name)) {
     return [homeItem]
   }
-  let res = routeMetched
+  let res = routeMatched
     .filter((item) => {
       return item.meta === undefined || !item.meta.hideInBread
     })

@@ -8,7 +8,7 @@
       <Card icon="log-in" title="欢迎登录" :bordered="false">
         <div class="form-con">
           <login-form :loading="loading" @on-success-valid="handleSubmit"></login-form>
-          <p class="login-tip">欢迎来到imooc社区</p>
+          <p class="login-tip">欢迎使用{{title}}</p>
         </div>
       </Card>
     </div>
@@ -18,13 +18,16 @@
 <script>
 import LoginForm from '_c/login-form'
 import { mapActions } from 'vuex'
+import config from '@/config/index'
+import { setToken, TOKEN_KEY } from '@/libs/util'
 export default {
   components: {
     LoginForm
   },
   data () {
     return {
-      loading: false
+      loading: false,
+      title: config.title
     }
   },
   methods: {
@@ -46,6 +49,8 @@ export default {
         //     name: this.$config.homeName
         //   })
         // })
+        this.$store.userInfo = res.data.userInfo || null
+        setToken(res.data[TOKEN_KEY])
       })
     }
   }

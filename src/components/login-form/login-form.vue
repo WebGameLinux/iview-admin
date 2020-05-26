@@ -15,11 +15,11 @@
       </Input>
     </FormItem>
     <FormItem prop="code">
-      <Input class="imooc-input" type="text" v-model="form.code" placeholder="请输入验证码">
+      <Input class="admin-input" type="text" v-model="form.code" placeholder="请输入验证码">
         <span slot="prepend">
           <Icon :size="14" type="md-image"></Icon>
         </span>
-        <span class="imooc-code" slot="append" v-html="svg" @click="_getCode()"></span>
+        <span class="captcha-code" slot="append" v-html="captcha" @click="_getCode()"></span>
       </Input>
     </FormItem>
     <FormItem>
@@ -78,10 +78,10 @@ export default {
   },
   data () {
     return {
-      svg: '',
+      captcha: '',
       form: {
-        username: 'toimc_admin@toimc.com',
-        password: 'toimc@520',
+        username: '',
+        password: '',
         code: '',
         sid: ''
       }
@@ -119,7 +119,7 @@ export default {
     _getCode () {
       getCode(this.$store.state.sid).then((res) => {
         if (res.code === 200) {
-          this.svg = res.data
+          this.captcha = res.data.captcha
         }
       })
     }
@@ -127,24 +127,24 @@ export default {
 }
 </script>
 <style lang="scss">
-.imooc-input {
-  .ivu-input-group-append {
-    padding: 0;
-  }
-  .ivu-input-group-prepend {
-    width: 32px;
-  }
+.admin-input {
+	.ivu-input-group-append {
+		padding: 0;
+	}
+	.ivu-input-group-prepend {
+		width: 32px;
+	}
 }
 
-.imooc-code {
-  display: inline-block;
-  padding: 0;
-  height: 28px;
-  overflow: hidden;
-  svg {
-    width: 120px;
-    position: relative;
-    top: -12px;
-  }
+.captcha-code {
+	display: inline-block;
+	padding: 0;
+	height: 28px;
+	overflow: hidden;
+	svg {
+		width: 120px;
+		position: relative;
+		top: -12px;
+	}
 }
 </style>
