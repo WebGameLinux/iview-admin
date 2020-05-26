@@ -7,8 +7,11 @@
     <div class="login-con">
       <Card icon="log-in" title="欢迎登录" :bordered="false">
         <div class="form-con">
-          <login-form :loading="loading" @on-success-valid="handleSubmit"></login-form>
-          <p class="login-tip">欢迎使用{{title}}</p>
+          <login-form
+            :loading="loading"
+            @on-success-valid="handleSubmit"
+          ></login-form>
+          <p class="login-tip">欢迎使用{{ title }}</p>
         </div>
       </Card>
     </div>
@@ -44,11 +47,6 @@ export default {
         } else {
           this.$Message.error(res.msg)
         }
-        // this.getUserInfo().then((res) => {
-        //   this.$router.push({
-        //     name: this.$config.homeName
-        //   })
-        // })
         this.$store.userInfo = res.data.userInfo || null
         setToken(res.data[TOKEN_KEY])
       })
@@ -57,5 +55,4 @@ export default {
 }
 </script>
 
-<style>
-</style>
+<style></style>
