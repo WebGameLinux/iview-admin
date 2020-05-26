@@ -1,8 +1,8 @@
 {
-  "name": "toimc-admin",
+  "name": "vue-admin",
   "version": "1.0.0",
   "private": false,
-  "author": "brian<brian@toimc.com>",
+  "author": "weblinuxgame<weblinuxgame@126.com>",
   "scripts": {
     "build": "vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
